@@ -630,6 +630,7 @@ name = "feature_flags"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",
+ "test_utils",
 ]
 
 [[package]]
@@ -925,6 +926,7 @@ name = "lumen_token"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",
+ "test_utils",
  "version-interface",
 ]
 
@@ -954,6 +956,7 @@ dependencies = [
  "proptest",
  "reentrancy-guard",
  "soroban-sdk",
+ "test_utils",
 ]
 
 [[package]]
@@ -1083,6 +1086,7 @@ name = "pricing_adapter"
 version = "0.1.0"
 dependencies = [
  "soroban-sdk",
+ "test_utils",
 ]
 
 [[package]]
@@ -1134,6 +1138,7 @@ name = "protocol_registry"
 version = "0.0.0"
 dependencies = [
  "soroban-sdk",
+ "test_utils",
 ]
 
 [[package]]
@@ -1733,6 +1738,13 @@ dependencies = [
  "once_cell",
  "rustix",
  "windows-sys",
+]
+
+[[package]]
+name = "test_utils"
+version = "0.1.0"
+dependencies = [
+ "soroban-sdk",
 ]
 
 [[package]]
