@@ -61,6 +61,13 @@ jobs:
     - name: Verify WASM hashes against manifest
       run: node scripts/verify-wasm-hashes.mjs
 
+    - name: Produce deployable (optimized) WASM
+      # deploy.ts uploads these; the raw build is rejected by Soroban
+      # (reference-types). See docs/MAINNET_READINESS.md.
+      run: |
+        npm ci --prefix ../../scripts
+        npm run --prefix ../../scripts wasm:optimize
+
     - name: Build base contracts for size comparison
       if: github.event_name == 'pull_request'
       run: |
