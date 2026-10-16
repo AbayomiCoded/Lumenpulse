@@ -3002,7 +3002,14 @@
       "AnalyzeResponse": {
         "properties": {
           "sentiment": {
-            "type": "number",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Sentiment"
           },
           "asset_codes": {
@@ -3037,6 +3044,21 @@
                 "type": "null"
               }
             ]
+          },
+          "scored": {
+            "type": "boolean",
+            "title": "Scored",
+            "default": true
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "default": 1.0
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "scored"
           }
         },
         "type": "object",
