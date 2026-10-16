@@ -34,6 +34,7 @@ from src.ml.feature_drift_detector import compute_distribution_baseline
 from src.ml.sentiment_evaluation import classification_metrics, seed_sentiment_labels
 from src.utils.logger import setup_logger
 from src.utils.metrics import JOBS_RUN_TOTAL, MODEL_RETRAINING_TOTAL, MODEL_RETRAINING_DURATION
+from src.observability.stage_profiler import profile_stage
 
 logger = setup_logger(__name__)
 
@@ -380,7 +381,7 @@ def _build_price_predictor(
 # Orchestrator
 # ---------------------------------------------------------------------------
 
-def run_retraining(
+def _run_retraining(
     db_session=None,
     force: bool = False,
     manifest: Optional[Dict[str, Any]] = None,
@@ -459,7 +460,8 @@ def run_retraining(
 
         # ── 1. Sentiment model ──────────────────────────────────────────────
         logger.info("Step 1: Retraining sentiment model …")
-        with MODEL_RETRAINING_DURATION.labels(model_type="sentiment").time():
+        with MODEL_RETRAINING_DURATION.labels(model_type="sentiment").time(), \
+                profile_stage("model_retraining.sentiment"):
             sentiment_model, sentiment_metrics = _build_sentiment_model()
             sentiment_metrics["evaluation"] = _evaluate_sentiment_model(sentiment_model, db_session)
 
@@ -490,7 +492,8 @@ def run_retraining(
 
         # ── 2. Price predictor ──────────────────────────────────────────────
         logger.info("Step 2: Retraining price predictor …")
-        with MODEL_RETRAINING_DURATION.labels(model_type="price_predictor").time():
+        with MODEL_RETRAINING_DURATION.labels(model_type="price_predictor").time(), \
+                profile_stage("model_retraining.price_predictor"):
             if snapshot_data is not None:
                 # Use snapshot data directly for exact reproducibility
                 predictor = PricePredictor(model_name="linear_regression")
@@ -599,8 +602,11 @@ def run_retraining(
             from src.anomaly_detector import AnomalyDetector
             from src.ml.anomaly_evaluation import evaluate_detector
 
-            anomaly_report = evaluate_detector(lambda: AnomalyDetector(use_ml=False))
-            result["anomaly_detector_evaluation"] = anomaly_report
+            with profile_stage("model_retraining.anomaly_evaluation"):
+                anomaly_report = evaluate_detector(
+                    lambda: AnomalyDetector(use_ml=False)
+                )
+                result["anomaly_detector_evaluation"] = anomaly_report
             logger.info(
                 "Anomaly detector evaluation: precision=%.3f recall=%.3f false_positive_rate=%.3f",
                 anomaly_report["overall"]["precision"],
@@ -648,6 +654,29 @@ def run_retraining(
         _retrain_lock.release()
 
     return result
+
+
+def run_retraining(
+    db_session=None,
+    force: bool = False,
+    manifest: Optional[Dict[str, Any]] = None,
+    seed: Optional[int] = None,
+) -> Dict[str, Any]:
+    """
+    Profiled entry point for a full retraining run (#1454).
+
+    The whole run is measured as the ``model_retraining_daily`` stage, with its
+    compute broken out further into ``model_retraining.sentiment``,
+    ``model_retraining.price_predictor`` and
+    ``model_retraining.anomaly_evaluation``.
+    """
+    with profile_stage("model_retraining_daily"):
+        return _run_retraining(
+            db_session=db_session,
+            force=force,
+            manifest=manifest,
+            seed=seed,
+        )
 
 
 def get_last_run_status() -> Dict[str, Any]:

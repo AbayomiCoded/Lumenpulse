@@ -40,6 +40,7 @@ from src.security import (
     get_rate_limit_decorator,
 )
 from src.ml.retraining_pipeline import run_retraining, get_last_run_status
+from src.observability.stage_profiler import profile_stage
 from src.ml.ood_detector import LexicalOODDetector, configured_unknown_token_ratio
 from src.ml.model_registry import (
     get_registry_status,
@@ -1453,10 +1454,11 @@ async def get_forecast(request: Request) -> ForecastResponse:
         from src.analytics.backtester import BacktestHarness, load_config
 
         forecaster = SentimentForecaster()
-        df = forecaster.load_history()
-        if not forecaster._is_trained:
-            forecaster.train(df)
-        result = forecaster.predict(df)
+        with profile_stage("forecasting"):
+            df = forecaster.load_history()
+            if not forecaster._is_trained:
+                forecaster.train(df)
+            result = forecaster.predict(df)
 
         # Derive confidence indication from backtest (best-effort)
         confidence_indication = "low"
