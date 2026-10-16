@@ -23,6 +23,13 @@ import {
 import { JobLockService } from '../scheduler/job-lock.service';
 import { JobHistoryService } from '../scheduler/job-history.service';
 import { AdminAuditService } from '../admin-audit/admin-audit.service';
+import {
+  CORRELATION_ID_HEADER,
+  REQUEST_ID_HEADER,
+} from '../common/constants/request.constants';
+import { RequestContextService } from '../common/services/request-context.service';
+import { ConfigService } from '@nestjs/config';
+import { config } from '../lib/config';
 
 interface RebuildResultResponse {
   totalItems?: number;
@@ -57,13 +64,15 @@ function getErrorDetails(error: unknown): ErrorDetails {
 export class ReadModelRebuildService {
   private readonly logger = new Logger(ReadModelRebuildService.name);
   private readonly REBUILD_VERSION = '1.0.0';
+  private readonly pythonApiUrl: string;
+  private readonly pythonApiKey: string;
 
   // Mapping of datasets to their data-processing endpoints
   private readonly datasetEndpoints: Record<RebuildDataset, string> = {
-    [RebuildDataset.KPI_SNAPSHOTS]: '/api/kpi/recompute',
-    [RebuildDataset.PROJECT_VIEWS]: '/api/project-views/rebuild',
-    [RebuildDataset.CONTRACT_EVENTS]: '/api/contract-events/rebuild',
-    [RebuildDataset.DAILY_METRICS]: '/api/metrics/rebuild',
+    [RebuildDataset.KPI_SNAPSHOTS]: '/api/rebuild/kpi-snapshots',
+    [RebuildDataset.PROJECT_VIEWS]: '/api/rebuild/project-views',
+    [RebuildDataset.CONTRACT_EVENTS]: '/api/rebuild/contract-events',
+    [RebuildDataset.DAILY_METRICS]: '/api/rebuild/metrics',
     [RebuildDataset.ALL]: '/api/rebuild/all',
   };
 
@@ -74,7 +83,15 @@ export class ReadModelRebuildService {
     private readonly jobLockService: JobLockService,
     private readonly jobHistoryService: JobHistoryService,
     private readonly adminAuditService: AdminAuditService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.pythonApiUrl =
+      this.configService.get<string>('PYTHON_API_URL') || config.python.apiUrl;
+    this.pythonApiKey =
+      this.configService.get<string>('PYTHON_API_KEY') ||
+      config.python.apiKey ||
+      '';
+  }
 
   /**
    * Trigger a rebuild for a specific dataset or contract domain
@@ -233,9 +250,7 @@ export class ReadModelRebuildService {
       }
 
       // Call data-processing service
-      const dataProcessingUrl =
-        process.env.DATA_PROCESSING_URL || 'http://localhost:8001';
-      const url = `${dataProcessingUrl}${endpoint}`;
+      const url = `${this.pythonApiUrl}${endpoint}`;
 
       // Update progress
       job.progressDetails = {
@@ -247,11 +262,17 @@ export class ReadModelRebuildService {
 
       this.logger.log(`Calling data-processing: ${url}`);
 
+      const correlationId =
+        RequestContextService.getCorrelationId() !== 'unknown'
+          ? RequestContextService.getCorrelationId()
+          : `rebuild-${job.id}`;
+
       const response = await firstValueFrom(
         this.httpService.post<RebuildResultResponse>(url, payload, {
           headers: {
-            'X-API-Key': process.env.DATA_PROCESSING_API_KEY || '',
-            'X-Correlation-ID': `rebuild-${job.id}`,
+            ...(this.pythonApiKey ? { 'X-API-Key': this.pythonApiKey } : {}),
+            [CORRELATION_ID_HEADER]: correlationId,
+            [REQUEST_ID_HEADER]: correlationId,
           },
           timeout: 300000, // 5 minutes
         }),

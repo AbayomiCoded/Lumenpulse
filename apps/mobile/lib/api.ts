@@ -111,6 +111,23 @@ export interface UpdateProfilePayload {
  * Auth API Service
  * Uses the shared API client for all requests
  */
+export interface PushTokenRegistration {
+  token: string;
+  deviceId: string;
+  platform: 'ios' | 'android' | 'web';
+  deviceName?: string;
+}
+
+export const notificationDevicesApi = {
+  async register(payload: PushTokenRegistration): Promise<ApiResponse<void>> {
+    return apiClient.post<void>('/notification-devices', payload);
+  },
+
+  async deregister(deviceId: string): Promise<ApiResponse<void>> {
+    return apiClient.deleteWithBody<void>('/notification-devices', { deviceId });
+  },
+};
+
 export const authApi = {
   /**
    * Login user
@@ -223,3 +240,6 @@ export const stellarApi = {
 
 // Re-export the client for direct use if needed
 export { apiClient };
+
+// Export API
+export * from './exports';

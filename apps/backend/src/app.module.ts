@@ -26,12 +26,14 @@ import { ExchangeRatesModule } from './exchange-rates/exchange-rates.module';
 import { WatchlistModule } from './watchlist/watchlist.module';
 import { ModerationModule } from './moderation/moderation.module';
 import { FeatureFlagsModule } from './feature-flags/feature-flags.module';
+import { MessageTemplateModule } from './message-template/message-template.module';
 
 import databaseConfig from './database/database.config';
 import stellarConfig from './stellar/config/stellar.config';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
-import { RequestContextService } from './common/services/request-context.service';
+import { RequestContextModule } from './common/services/request-context.module';
+import { StructuredLoggerService } from './common/services/structured-logger.service';
 import { RateLimitGuard } from './common/rate-limit/rate-limit.guard';
 import { RateLimitModule } from './common/rate-limit/rate-limit.module';
 import { RateLimitStorageService } from './common/rate-limit/rate-limit.storage';
@@ -45,10 +47,12 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { GrantsModule } from './grants/grants.module';
 import { HealthModule } from './health/health.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
 import { OutboxModule } from './outbox/outbox.module';
 import { VerificationModule } from './verification/verification.module';
 import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
+import { IdempotencyModule } from './idempotency/idempotency.module';
 import { DeprecationInterceptor } from './common/interceptors/deprecation.interceptor';
 import { SearchModule } from './search/search.module';
 import { ExportModule } from './export/export.module';
@@ -60,6 +64,7 @@ import { CrowdfundSyncModule } from './crowdfund-sync/crowdfund-sync.module';
 import { ContributorRegistryModule } from './contributor-registry/contributor-registry.module';
 import { AuditModule } from './audit/audit.module';
 import { AuditLogInterceptor } from './audit/interceptors/audit-log.interceptor';
+import { DataRetentionModule } from './data-retention/data-retention.module';
 import { SorobanEventsModule } from './soroban-events/soroban-events.module';
 import { TreasuryModule } from './treasury/treasury.module';
 import { VestingWalletModule } from './vesting-wallet/vesting-wallet.module';
@@ -76,6 +81,10 @@ import { SnapshotsModule } from './snapshot/snapshot.module';
 import { ReconciliationModule } from './reconciliation/reconciliation.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { PriceAlertModule } from './price-alert/price-alert.module';
+import { ProfilingModule } from './common/profiling/profiling.module';
+import { QueryCountMiddleware } from './common/profiling/query-count.middleware';
+import { DashboardModule } from './dashboard/dashboard.module';
+import { SavedSearchesModule } from './saved-searches/saved-searches.module';
 
 @Module({
   imports: [
@@ -98,6 +107,9 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
         };
       },
     }),
+
+    // Request-scoped context (shared AsyncLocalStorage)
+    RequestContextModule,
 
     // Scheduling
     ScheduleModule.forRoot(),
@@ -136,6 +148,7 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
     AuthModule,
     UsersModule,
     HealthModule,
+    SchedulerModule,
     QueueModule,
     StellarSyncModule,
     ExchangeRatesModule,
@@ -151,6 +164,7 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
     ModerationModule,
     SearchModule,
     FeatureFlagsModule,
+    MessageTemplateModule,
 
     // Crowdfund modules
     CrowdfundModule,
@@ -164,6 +178,9 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
 
     // Audit
     AuditModule,
+
+    // Data retention and user erasure
+    DataRetentionModule,
 
     // Soroban event processing
     SorobanEventsModule,
@@ -205,11 +222,23 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
 
     // Price alerts
     PriceAlertModule,
+
+    // Idempotency for write endpoints
+    IdempotencyModule,
+
+    // Query profiling (dev-only, enabled via QUERY_PROFILING=true)
+    ProfilingModule,
+
+    // Aggregated, cached dashboard read model
+    DashboardModule,
+
+    // Saved searches & subscriptions
+    SavedSearchesModule,
   ],
   controllers: [AppController, TestController, TestExceptionController],
   providers: [
     AppService,
-    RequestContextService,
+    StructuredLoggerService,
     {
       provide: APP_GUARD,
       useClass: RateLimitGuard,
@@ -232,5 +261,11 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     // Apply request ID and logging middleware to all routes
     consumer.apply(RequestIdMiddleware, LoggerMiddleware).forRoutes('*');
+
+    // Apply query-count profiling middleware when QUERY_PROFILING=true.
+    // Off by default — zero overhead in production.
+    if (process.env['QUERY_PROFILING']?.toLowerCase() === 'true') {
+      consumer.apply(QueryCountMiddleware).forRoutes('*');
+    }
   }
 }
