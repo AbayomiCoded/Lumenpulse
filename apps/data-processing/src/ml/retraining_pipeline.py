@@ -385,6 +385,7 @@ def run_retraining(
     force: bool = False,
     manifest: Optional[Dict[str, Any]] = None,
     seed: Optional[int] = None,
+    trigger_context: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """
     Full retraining run: train → evaluate → version → promote.
@@ -396,6 +397,7 @@ def run_retraining(
                     If manifest contains 'snapshot_id', the exact training data
                     from that snapshot will be loaded for reproducibility.
         seed:       Optional seed for randomness (used only if no manifest).
+        trigger_context: Optional attribution for the event that initiated this run.
 
     Returns:
         A result dict with versions, metrics, and status.
@@ -412,6 +414,8 @@ def run_retraining(
         "started_at": started_at.isoformat(),
         "models": {},
     }
+    if trigger_context is not None:
+        result["trigger"] = dict(trigger_context)
 
     try:
         if db_session is not None:
