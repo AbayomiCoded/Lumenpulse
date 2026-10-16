@@ -850,14 +850,16 @@ async def analyze_batch(request: Request, texts: list[str], asset: Optional[str]
             logger.error("Batch inference failed: %s", e, exc_info=True)
             raise HTTPException(status_code=500, detail=str(e))
 
-        # One inference per batch item, all charged to this model version and
-        # serving path (#1643).
+        # One inference per scored batch item, all charged to this model
+        # version and serving path (#1643). Out-of-distribution items are
+        # rejected before sentiment inference, so they are not counted —
+        # matching how /analyze skips record_inference for rejected inputs.
         record_inference(
             model_type="sentiment",
             endpoint="/analyze-batch",
             duration_seconds=time.monotonic() - batch_start,
             model_version=get_current_version("sentiment") or "1.0.0",
-            count=len(results),
+            count=sum(1 for _, result in assessed_results if result is not None),
         )
 
         # --- 4. Per-item error isolation ---------------------------------------
