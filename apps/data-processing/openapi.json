@@ -1904,6 +1904,45 @@
         }
       }
     },
+    "/price/predict": {
+      "post": {
+        "summary": "Predict Price",
+        "description": "Serve the promoted price model and log every ensemble member's contribution.",
+        "operationId": "predict_price_price_predict_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricePredictionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricePredictionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/analyze": {
       "post": {
         "summary": "Analyze Text",
@@ -4988,6 +5027,63 @@
         ],
         "title": "OperationResponse",
         "description": "Response model for account operation."
+      },
+      "PricePredictionRequest": {
+        "properties": {
+          "features": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Features"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "features"
+        ],
+        "title": "PricePredictionRequest"
+      },
+      "PricePredictionResponse": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "member_contributions": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Member Contributions"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictions",
+          "member_contributions",
+          "model_version"
+        ],
+        "title": "PricePredictionResponse"
       },
       "RebuildRequest": {
         "properties": {
