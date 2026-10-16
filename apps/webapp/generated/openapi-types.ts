@@ -92,6 +92,30 @@ export interface components {
       hasLinkedAccount: boolean;
       exchangeRate: number;
     };
+    PortfolioAnomalyResponseDto: {
+      id: string;
+      userId: string;
+      title: string;
+      description?: string | null;
+      anomalyType: string;
+      severity: "low" | "medium" | "high";
+      status: "unresolved" | "acknowledged";
+      reviewerId?: string | null;
+      reviewerNotes?: string | null;
+      reviewedAt?: string | null;
+      reviewerNotesUpdatedAt?: string | null;
+      createdAt: string;
+      updatedAt: string;
+      version: number;
+    };
+    PortfolioAnomaliesListResponseDto: {
+      anomalies: components['schemas']['PortfolioAnomalyResponseDto'][];
+      total: number;
+    };
+    ReviewPortfolioAnomalyDto: {
+      status: "unresolved" | "acknowledged";
+      reviewerNotes?: string;
+    };
     ChartMetaDto: {
       xAxis: components['schemas']['ChartAxisMetaDto'];
       yAxes: components['schemas']['ChartAxisMetaDto'][];
