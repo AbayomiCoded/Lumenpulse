@@ -46,6 +46,7 @@ def submit_job(
     job_type: str,
     idempotency_payload: Dict[str, Any],
     work_fn: Callable[[], Dict[str, Any]],
+    job_params: Optional[Dict[str, Any]] = None,
 ) -> Tuple[Dict[str, Any], bool]:
     """
     Submit a job for background execution.
@@ -67,7 +68,9 @@ def submit_job(
         return existing, False
 
     job = db_service.create_analytics_job(
-        job_type=job_type, dedupe_key=dedupe_key, params=idempotency_payload
+        job_type=job_type,
+        dedupe_key=dedupe_key,
+        params=job_params if job_params is not None else idempotency_payload,
     )
     if job is None:
         # Lost the race to a concurrent identical submission — return theirs.
