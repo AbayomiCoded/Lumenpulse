@@ -61,6 +61,8 @@ Describe the impact, the expected downsides, and the operational follow-through.
 
 ## Current ADR index
 
+Proposed for review: [ADR-0009: Serialize backend submissions per Stellar source](./ADR-0009-stellar-source-sequence-lock.md)
+
 1. [ADR-0001: Monorepo layout](./ADR-0001-monorepo-layout.md)
 2. [ADR-0002: Transactional outbox for reliable side effects](./ADR-0002-transactional-outbox.md)
 3. [ADR-0003: Separate Python service for analytics and inference](./ADR-0003-python-service-split.md)
