@@ -2125,6 +2125,27 @@
         }
       }
     },
+    "/model/cost-report": {
+      "get": {
+        "summary": "Model Cost Report",
+        "description": "Serving compute cost report (#1643).\n\nReturns cost attributed per model version and per endpoint, cost per\nthousand inferences for each model, the cost delta of a newly promoted\nmodel against its predecessor, and the three most expensive serving\npaths. The same data is exported as Prometheus metrics on ``/metrics``\nalongside the stage-level profiling from #1454.\n\nRequires X-API-Key header.",
+        "operationId": "model_cost_report_model_cost_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Model Cost Report Model Cost Report Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/model/shadow/register": {
       "post": {
         "summary": "Shadow Register",
