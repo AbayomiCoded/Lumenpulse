@@ -53,6 +53,8 @@ State the chosen approach in clear terms.
 ## Consequences
 Describe the impact, the expected downsides, and the operational follow-through.
 
+8. [ADR-0008: Shared resilient data-processing client](./ADR-0008-shared-data-processing-client.md)
+
 ## Related implementation summaries
 - [path/to/implementation-summary.md](path/to/implementation-summary.md)
 ```
