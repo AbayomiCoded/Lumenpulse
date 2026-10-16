@@ -5,6 +5,7 @@ for the Node.js backend to consume.
 """
 
 import asyncio
+import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -14,6 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict
 from typing import Dict, Any, Optional, List
 from datetime import datetime
+import pandas as pd
 
 # Import your existing SentimentAnalyzer
 import sys
@@ -302,6 +304,17 @@ class AnalyzeRequest(BaseModel):
     text: str
     asset: Optional[str] = None  # Optional asset filter
     explain: bool = False  # Optionally include per-token contributions (#1456)
+
+
+class PricePredictionRequest(BaseModel):
+    features: Dict[str, float]
+    schema_version: Optional[str] = None
+
+
+class PricePredictionResponse(BaseModel):
+    predictions: List[float]
+    member_contributions: Dict[str, Dict[str, Any]]
+    model_version: str
 
 
 class AnalyzeResponse(BaseModel):
@@ -627,6 +640,53 @@ async def get_contributor_activity_timeline(
         project_id=project_id,
         events=[ContributorActivityEventResponse(**event) for event in events],
     )
+
+
+@app.post("/price/predict", response_model=PricePredictionResponse)
+@limiter.limit("50/minute") if limiter else lambda x: x
+async def predict_price(body: PricePredictionRequest, request: Request) -> PricePredictionResponse:
+    """Serve the promoted price model and log every ensemble member's contribution."""
+    if not body.features:
+        raise HTTPException(status_code=400, detail="At least one feature is required")
+
+    start_time = time.monotonic()
+    INFERENCE_REQUESTS_TOTAL.labels(endpoint="/price/predict").inc()
+    try:
+        model = get_live_model("price_predictor")
+        model_version = get_current_version("price_predictor") or "unversioned"
+        features = pd.DataFrame([body.features])
+        if body.schema_version:
+            features.attrs["schema_version"] = body.schema_version
+
+        predict_with_contributions = getattr(model, "predict_with_contributions", None)
+        if callable(predict_with_contributions):
+            predictions, contributions = predict_with_contributions(features)
+        else:
+            predictions = model.predict(features)
+            contributions = {}
+        response = PricePredictionResponse(
+            predictions=[float(value) for value in predictions],
+            member_contributions=contributions,
+            model_version=model_version,
+        )
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=503, detail="Price prediction model is unavailable") from exc
+    except Exception as exc:
+        logger.exception("Price prediction failed")
+        raise HTTPException(status_code=500, detail="Price prediction failed") from exc
+
+    _log_prediction(
+        request_id=correlation_id_ctx.get(generate_correlation_id()),
+        model_type="price_predictor",
+        model_version=response.model_version,
+        input_text=json.dumps(body.features, sort_keys=True),
+        output={
+            "predictions": response.predictions,
+            "member_contributions": response.member_contributions,
+        },
+        latency_ms=(time.monotonic() - start_time) * 1000,
+    )
+    return response
 
 
 @app.post("/analyze", response_model=AnalyzeResponse)
