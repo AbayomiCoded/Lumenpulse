@@ -2,7 +2,8 @@
 
 This document collects the figures and checks needed before the Lumenpulse
 contract suite is deployed to Stellar mainnet. Operational procedure lives in
-the [Contract Deployment & Rollback Playbook](CONTRACT_DEPLOYMENT_ROLLBACK_PLAYBOOK.md);
+the [Contract Deployment & Rollback Playbook](CONTRACT_DEPLOYMENT_ROLLBACK_PLAYBOOK.md) and the
+[Contract Mainnet Readiness Checklist](./MAINNET_READINESS_CHECKLIST.md);
 this page records what deployment **costs** and what must be true for it to succeed.
 
 ---
@@ -154,3 +155,4 @@ At that point, switch the CI "Verify WASM hashes against manifest" step to
 - [ ] Deploy only `release/optimized/*.wasm`.
 - [ ] Record the optimized hashes in the manifest and switch hash verification to `--optimized`.
 - [ ] Confirm the size budgets in `apps/onchain/wasm-budgets.json` still pass (`node ../../scripts/check-wasm-size.mjs` from `apps/onchain`).
+- [ ] Complete all items on the [Contract Mainnet Readiness Checklist](./MAINNET_READINESS_CHECKLIST.md) and record sign-offs in [`apps/onchain/mainnet-readiness.signoffs.json`](../apps/onchain/mainnet-readiness.signoffs.json).

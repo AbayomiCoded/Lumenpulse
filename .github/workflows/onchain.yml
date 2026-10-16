@@ -6,11 +6,13 @@ on:
     branches: [ "main" ]
     paths:
       - 'apps/onchain/**'
+      - 'docs/MAINNET_READINESS_CHECKLIST.md'
   pull_request:
     branches: [ "main" ]
     paths:
       - 'apps/onchain/**'
       - 'apps/onchain/.ci-trigger'
+      - 'docs/MAINNET_READINESS_CHECKLIST.md'
 
 jobs:
   onchain-checks:
@@ -99,3 +101,6 @@ jobs:
     - name: Run tests
       if: env.SKIP_TESTS != 'true'
       run: cargo test
+
+    - name: Verify mainnet readiness checklist is current
+      run: node scripts/mainnet-readiness.mjs --check
