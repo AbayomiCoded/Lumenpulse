@@ -29,6 +29,8 @@ import {
   RoundExportDto,
   LeaderboardQueryDto,
   LeaderboardResponseDto,
+  RoundListQueryDto,
+  RoundListResponseDto,
 } from './dto/grants.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
@@ -54,10 +56,10 @@ export class GrantsController {
   @ApiResponse({
     status: 200,
     description: 'List of rounds retrieved successfully',
-    type: [RoundDto],
+    type: RoundListResponseDto,
   })
-  listRounds() {
-    return this.grantsService.listRounds();
+  listRounds(@Query() query: RoundListQueryDto): RoundListResponseDto {
+    return this.grantsService.listRounds(query);
   }
 
   @Get('rounds/:id')
