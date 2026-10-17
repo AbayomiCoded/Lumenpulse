@@ -43,6 +43,5 @@
   "POST /review-history/comments [ReviewHistoryController_createComment]: 201 response has no body schema (add @ApiOkResponse/@ApiCreatedResponse with a type; @ApiNoBodyResponse if the handler returns nothing)",
   "POST /review-history/decisions [ReviewHistoryController_createDecision]: 201 response has no body schema (add @ApiOkResponse/@ApiCreatedResponse with a type; @ApiNoBodyResponse if the handler returns nothing)",
   "POST /transactions/status/callback [TransactionStatusController_registerCallback]: 202 response has no body schema (add @ApiOkResponse/@ApiCreatedResponse with a type; @ApiNoBodyResponse if the handler returns nothing)",
-  "POST /users/me/accounts/{id}/primary [UsersController_setMyPrimaryAccount]: 200 response has no body schema (add @ApiOkResponse/@ApiCreatedResponse with a type; @ApiNoBodyResponse if the handler returns nothing)",
-  "schema Object: has no properties (add @ApiProperty or use a *.dto.ts file)"
+  "POST /users/me/accounts/{id}/primary [UsersController_setMyPrimaryAccount]: 200 response has no body schema (add @ApiOkResponse/@ApiCreatedResponse with a type; @ApiNoBodyResponse if the handler returns nothing)"
 ]
