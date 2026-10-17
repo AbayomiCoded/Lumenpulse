@@ -91,6 +91,8 @@ export const CATALOGUE_EXEMPT: Readonly<Record<string, string>> = {
   'Header.tsx': 'HeaderBell loads /notifications from the API as soon as it mounts.',
   'PortfolioAnalyticsChart.tsx':
     'Loads wallet analytics from the API; its states are unit tested in lib/analytics.ts.',
+  'StartupInteractiveGate.tsx':
+    'Wraps the root layout to record time to interactive; renders only a zero size sentinel.',
   'VerificationPanel.tsx':
     'Bound to the verification API for one project; it is shown on the project detail screen.',
 };
