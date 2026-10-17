@@ -28,6 +28,7 @@ STATUS_NEVER_RUN = "never_run"
 STATUS_RUNNING = "running"
 STATUS_SUCCESS = "success"
 STATUS_FAILED = "failed"
+STATUS_SKIPPED = "skipped"
 
 
 @dataclass(frozen=True)
@@ -139,11 +140,18 @@ def _status_for(record: Dict[str, Any]) -> str:
     state = record.get("state") or record.get("outcome")
     if state == STATUS_FAILED:
         return STATUS_FAILED
+    if state == STATUS_SKIPPED:
+        return STATUS_SKIPPED
     if state == STATUS_RUNNING:
         return STATUS_RUNNING
     if state == STATUS_SUCCESS:
         return STATUS_SUCCESS
     return STATUS_SUCCESS if record.get("last_run") else STATUS_NEVER_RUN
+
+
+def _failed_stages(stages_out: List[Dict[str, Any]]) -> set:
+    """Return the set of stage ids that are currently in a failed state."""
+    return {s["id"] for s in stages_out if s["status"] == STATUS_FAILED}
 
 
 def build_topology(runs: Dict[str, Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -154,8 +162,21 @@ def build_topology(runs: Dict[str, Dict[str, Any]]) -> List[Dict[str, Any]]:
     ``pipeline_run_registry``). A stage with no record is reported as
     ``never_run`` with null run fields, which is how a stage that failed is
     told apart from one that has simply not run yet.
+
+    Downstream skipping
+    -------------------
+    If a stage's ``depends_on`` list contains any stage whose current status
+    is ``"failed"``, the downstream stage is reported as ``"skipped"`` even
+    if the registry does not yet carry a skip record for it.  The
+    ``skip_reason`` field explains which dependency failed.
+
+    This gives the topology API a consistent view: consumers always see
+    skipped stages rather than stages that appear ``never_run`` or
+    ``running`` when their inputs are absent.
     """
     validate_dependencies()
+
+    # First pass: build each stage entry from its run record.
     stages: List[Dict[str, Any]] = []
     for stage in PIPELINE_STAGES:
         record = runs.get(stage.id)
@@ -171,22 +192,61 @@ def build_topology(runs: Dict[str, Dict[str, Any]]) -> List[Dict[str, Any]]:
                     "duration_seconds": None,
                     "outcome": None,
                     "error": None,
+                    "retry_count": 0,
+                    "last_retry_at": None,
+                    "skip_reason": None,
+                    "alerted": False,
                 }
             )
+        else:
+            stages.append(
+                {
+                    "id": stage.id,
+                    "name": stage.name,
+                    "schedule": stage.schedule,
+                    "depends_on": list(stage.depends_on),
+                    "status": _status_for(record),
+                    "last_run": record.get("last_run"),
+                    "duration_seconds": record.get("duration_seconds"),
+                    "outcome": record.get("outcome"),
+                    "error": record.get("error"),
+                    "retry_count": record.get("retry_count", 0),
+                    "last_retry_at": record.get("last_retry_at"),
+                    "skip_reason": record.get("skip_reason"),
+                    "alerted": record.get("alerted", False),
+                }
+            )
+
+    # Second pass: propagate skipped status to downstream stages whose
+    # dependencies are in a failed state.  We iterate in declaration order,
+    # which is a valid topological order given that PIPELINE_STAGES is
+    # already defined dependency-first.
+    failed_ids: set = _failed_stages(stages)
+
+    # Build a quick lookup by id for the second pass.
+    stage_by_id = {s["id"]: s for s in stages}
+
+    for stage_entry in stages:
+        if stage_entry["status"] in (STATUS_SKIPPED, STATUS_FAILED):
+            # Already terminal — don't override.
             continue
-        stages.append(
-            {
-                "id": stage.id,
-                "name": stage.name,
-                "schedule": stage.schedule,
-                "depends_on": list(stage.depends_on),
-                "status": _status_for(record),
-                "last_run": record.get("last_run"),
-                "duration_seconds": record.get("duration_seconds"),
-                "outcome": record.get("outcome"),
-                "error": record.get("error"),
-            }
-        )
+        failed_deps = [
+            dep
+            for dep in stage_entry["depends_on"]
+            if dep in failed_ids
+        ]
+        if failed_deps:
+            reason = (
+                "upstream stage failed: "
+                + ", ".join(f"'{d}'" for d in failed_deps)
+            )
+            stage_entry["status"] = STATUS_SKIPPED
+            stage_entry["outcome"] = STATUS_SKIPPED
+            stage_entry["skip_reason"] = reason
+            # Propagate: this stage is now effectively failed for its own
+            # downstream dependents.
+            failed_ids.add(stage_entry["id"])
+
     return stages
 
 
