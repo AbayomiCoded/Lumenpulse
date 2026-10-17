@@ -192,17 +192,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "409": {
             "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
             "content": {
@@ -1062,24 +1051,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -1299,24 +1270,6 @@
         "responses": {
           "200": {
             "description": "Test suite ran successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SentimentTestResultDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -1760,17 +1713,58 @@
       "get": {
         "description": "Retrieves all available grant rounds (active, pending, finalized).",
         "operationId": "GrantsController_listRounds",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of rounds retrieved successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/RoundDto"
-                  }
+                  "$ref": "#/components/schemas/RoundListResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
                 }
               }
             },
@@ -2379,24 +2373,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoundDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -2591,17 +2567,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -2787,17 +2752,6 @@
         "responses": {
           "200": {
             "description": "Project approved successfully",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -3201,17 +3155,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid round or project",
             "content": {
@@ -3338,17 +3281,6 @@
         "responses": {
           "200": {
             "description": "Distribution completed successfully",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -4023,7 +3955,7 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -4031,7 +3963,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -8094,7 +8026,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful",
+            "description": "2FA required\n\nLogin successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -9252,7 +9184,7 @@
             "in": "query",
             "description": "Stellar public key (starts with G)",
             "schema": {
-              "pattern": "/^G[A-Z0-9]{55}$/",
+              "pattern": "^G[A-Z0-9]{55}$",
               "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM",
               "type": "string"
             }
@@ -9393,17 +9325,6 @@
                 }
               }
             },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -11357,7 +11278,7 @@
         "parameters": [
           {
             "name": "format",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -13085,24 +13006,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioAnomalyResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -13390,7 +13293,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "number"
@@ -18242,7 +18145,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "The Health Check is successful",
+            "description": "Returns a healthy or degraded response when the API is available.\n\nThe Health Check is successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -18360,7 +18263,7 @@
             }
           },
           "503": {
-            "description": "The Health Check is not successful",
+            "description": "Returns when a critical dependency is unavailable.\n\nThe Health Check is not successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -19723,24 +19626,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoteResultDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid project or voter key",
             "content": {
@@ -19867,24 +19752,6 @@
         "responses": {
           "200": {
             "description": "Verification status overridden successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectVerificationDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -24394,17 +24261,58 @@
       },
       "get": {
         "operationId": "ExportController_listJobs",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ExportJobResponseDto"
-                  }
+                  "$ref": "#/components/schemas/ExportJobListResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
                 }
               }
             },
@@ -25477,9 +25385,20 @@
         "operationId": "NewsController_getLatestArticles",
         "parameters": [
           {
-            "name": "limit",
+            "name": "page",
             "required": false,
             "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (1–100, default 20)",
             "schema": {
               "example": 20,
               "type": "number"
@@ -25521,7 +25440,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NewsArticlesResponseDto"
+                  "$ref": "#/components/schemas/NewsArticlesPaginatedResponseDto"
                 }
               }
             },
@@ -25589,7 +25508,7 @@
             }
           }
         },
-        "summary": "Get latest crypto news articles",
+        "summary": "Get paginated latest crypto news articles",
         "tags": [
           "news"
         ]
@@ -26013,11 +25932,22 @@
             }
           },
           {
-            "name": "limit",
+            "name": "page",
             "required": false,
             "in": "query",
+            "description": "Page number (1-indexed)",
             "schema": {
-              "example": 10,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (1–100, default 20)",
+            "schema": {
+              "example": 20,
               "type": "number"
             }
           }
@@ -26028,7 +25958,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/NewsArticlesResponseDto"
+                  "$ref": "#/components/schemas/NewsArticlesPaginatedResponseDto"
                 }
               }
             },
@@ -26114,7 +26044,7 @@
             }
           }
         },
-        "summary": "Get news for a specific cryptocurrency",
+        "summary": "Get paginated news for a specific cryptocurrency",
         "tags": [
           "news"
         ]
@@ -26125,6 +26055,31 @@
         "description": "Search registered projects with basic relevance ranking and optional status/owner filters.",
         "operationId": "SearchController_searchProjects",
         "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
           {
             "name": "q",
             "required": false,
@@ -26159,31 +26114,6 @@
             "schema": {
               "example": "GA5ZSEJYB37JRC5AVCIA5MOP4RHTM335X2KGX3IHOJAPP5RE34K4KZVN",
               "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "description": "Pagination limit",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20,
-              "example": 20,
-              "type": "number"
-            }
-          },
-          {
-            "name": "offset",
-            "required": false,
-            "in": "query",
-            "description": "Pagination offset",
-            "schema": {
-              "minimum": 0,
-              "default": 0,
-              "example": 0,
-              "type": "number"
             }
           }
         ],
@@ -26810,24 +26740,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FeatureFlag"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -26981,7 +26893,7 @@
           },
           {
             "name": "principalId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -28081,24 +27993,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContributionResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -29003,7 +28897,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "ledgerSequence",
+                "processedAt"
+              ]
             }
           },
           {
@@ -29011,7 +28911,12 @@
             "required": false,
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -29502,7 +29407,13 @@
             "required": false,
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "updatedAt",
+                "failureCount"
+              ]
             }
           },
           {
@@ -29510,7 +29421,12 @@
             "required": false,
             "in": "query",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -30307,7 +30223,8 @@
             "description": "Secret token for authenticating ingest requests (configured via SOROBAN_INGEST_SECRET environment variable)",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "your-secret-ingest-token-here"
             }
           },
           {
@@ -34955,19 +34872,8 @@
           }
         ],
         "responses": {
-          "24": {
-            "description": "Deployment manifest deleted successfully",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "204": {
-            "description": "",
+            "description": "Deployment manifest deleted successfully",
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -36490,18 +36396,20 @@
             "schema": {
               "minimum": 1,
               "default": 1,
+              "example": 1,
               "type": "number"
             }
           },
           {
-            "name": "limit",
+            "name": "pageSize",
             "required": false,
             "in": "query",
-            "description": "Items per page (1-100, default 20)",
+            "description": "Number of items per page",
             "schema": {
               "minimum": 1,
               "maximum": 100,
               "default": 20,
+              "example": 20,
               "type": "number"
             }
           },
@@ -36535,6 +36443,15 @@
                 "DESC"
               ],
               "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Items per page (1-100, default 20)",
+            "schema": {
+              "type": "number"
             }
           }
         ],
@@ -36645,24 +36562,6 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RebuildTriggerResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "202": {
             "description": "Rebuild job started",
             "content": {
@@ -36979,7 +36878,7 @@
         "parameters": [
           {
             "name": "dataset",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -36987,7 +36886,7 @@
           },
           {
             "name": "status",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -36995,7 +36894,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -37325,7 +37224,7 @@
         "parameters": [
           {
             "name": "olderThanDays",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -39868,6 +39767,31 @@
         "operationId": "ProjectsController_listProjects",
         "parameters": [
           {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (1-indexed)",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
             "name": "status",
             "required": false,
             "in": "query",
@@ -39892,29 +39816,6 @@
             }
           },
           {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "description": "Page number (1-indexed)",
-            "schema": {
-              "minimum": 1,
-              "default": 1,
-              "type": "number"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "description": "Items per page",
-            "schema": {
-              "minimum": 1,
-              "maximum": 100,
-              "default": 10,
-              "type": "number"
-            }
-          },
-          {
             "name": "sortBy",
             "required": false,
             "in": "query",
@@ -39930,7 +39831,12 @@
             "in": "query",
             "description": "Sort direction",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -40584,6 +40490,7 @@
           "sentimentTests": {
             "description": "Results of sentiment tests",
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/SentimentTestResultDto"
@@ -40609,6 +40516,42 @@
       "ForceRefreshDto": {
         "type": "object",
         "properties": {}
+      },
+      "RoundListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "List of items for the current page"
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of items matching the query",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number (1-indexed)",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 3
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ]
       },
       "RoundDto": {
         "type": "object",
@@ -41489,6 +41432,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Additional metadata about the decision",
             "example": {
               "priority": "high",
@@ -41573,9 +41517,9 @@
           },
           "details": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
-            "description": "Type-specific fields (request metadata, tx hash, ...)",
-            "additionalProperties": true
+            "description": "Type-specific fields (request metadata, tx hash, ...)"
           },
           "createdAt": {
             "type": "string",
@@ -41753,7 +41697,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "/^G[A-Z0-9]{55}$/",
+            "pattern": "^G[A-Z0-9]{55}$",
             "description": "Stellar public key (starts with G)",
             "example": "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHF"
           },
@@ -41942,7 +41886,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "/^G[A-Z0-9]{55}$/",
+            "pattern": "^G[A-Z0-9]{55}$",
             "description": "Stellar public key",
             "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM"
           },
@@ -42047,7 +41991,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -42071,7 +42015,7 @@
           },
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -42087,7 +42031,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code to disable 2FA",
             "example": "123456"
           }
@@ -42156,11 +42100,11 @@
             "type": "string"
           },
           "action": {
-            "type": "string",
             "enum": [
               "create",
               "update"
-            ]
+            ],
+            "type": "string"
           },
           "previousVersion": {
             "type": "number"
@@ -42201,6 +42145,7 @@
         "properties": {
           "variables": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Variable values for preview. When omitted, the template sampleVariables are used.",
             "example": {
               "symbol": "XLM",
@@ -42266,6 +42211,9 @@
           },
           "sampleVariables": {
             "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Default sample data used by the preview endpoint"
           }
         }
@@ -42493,7 +42441,14 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "failed",
+              "running",
+              "completed",
+              "queued",
+              "completed_with_errors"
+            ],
+            "type": "string",
             "description": "Current status of the batch job",
             "example": "queued"
           },
@@ -42537,7 +42492,14 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "failed",
+              "running",
+              "completed",
+              "queued",
+              "completed_with_errors"
+            ],
+            "type": "string",
             "description": "Current status of the snapshot batch job",
             "example": "running"
           },
@@ -42562,7 +42524,12 @@
             "example": 48
           },
           "triggeredBy": {
-            "type": "object",
+            "enum": [
+              "unknown",
+              "manual",
+              "cron"
+            ],
+            "type": "string",
             "description": "Trigger source",
             "example": "manual"
           },
@@ -42602,13 +42569,13 @@
         "type": "object",
         "properties": {
           "window": {
-            "type": "string",
-            "description": "The time window identifier",
             "enum": [
               "24h",
               "7d",
               "30d"
             ],
+            "type": "string",
+            "description": "The time window identifier",
             "example": "24h"
           },
           "hasData": {
@@ -43223,6 +43190,9 @@
           },
           "updatedContracts": {
             "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Map of contract names to their new IDs",
             "example": {
               "lumenToken": "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABSC4"
@@ -43436,12 +43406,12 @@
         "type": "object",
         "properties": {
           "network": {
-            "type": "string",
-            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "enum": [
               "testnet",
               "mainnet"
             ],
+            "type": "string",
+            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "example": "testnet"
           },
           "horizonUrl": {
@@ -43740,7 +43710,6 @@
           },
           "eventPreferences": {
             "type": "object",
-            "description": "Event category preferences",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -43760,7 +43729,8 @@
                   }
                 }
               }
-            }
+            },
+            "description": "Event category preferences"
           },
           "quietHours": {
             "description": "Quiet hours configuration",
@@ -43822,6 +43792,7 @@
           },
           "quietHours": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/QuietHoursConfigDto"
@@ -43881,6 +43852,7 @@
           },
           "eventPreferences": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Event category preferences"
           },
           "quietHours": {
@@ -43969,6 +43941,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata context for the event (e.g., projectId, symbol, poolId)"
           }
         },
@@ -44027,8 +44000,8 @@
           },
           "suppressionBreakdown": {
             "type": "object",
-            "description": "Breakdown of suppression reasons",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "description": "Breakdown of suppression reasons"
           },
           "notificationIds": {
             "description": "IDs of created notifications",
@@ -44068,8 +44041,8 @@
           },
           "metadata": {
             "type": "object",
-            "nullable": true,
-            "additionalProperties": true
+            "additionalProperties": true,
+            "nullable": true
           },
           "createdAt": {
             "format": "date-time",
@@ -44156,6 +44129,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata context for the alert (drift findings, run id, ...)"
           },
           "targetUserIds": {
@@ -44750,6 +44724,7 @@
           },
           "reviewer": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/User"
@@ -45006,6 +44981,7 @@
           },
           "payload": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Serialised event payload"
           },
           "correlationId": {
@@ -45118,6 +45094,42 @@
           "status",
           "createdAt",
           "updatedAt"
+        ]
+      },
+      "ExportJobListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "List of items for the current page"
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of items matching the query",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number (1-indexed)",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 3
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
         ]
       },
       "UserSignalDto": {
@@ -45326,6 +45338,48 @@
           "message"
         ]
       },
+      "NewsArticlesPaginatedResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "List of items for the current page"
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of items matching the query",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number (1-indexed)",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 3
+          },
+          "fetchedAt": {
+            "type": "string",
+            "description": "Timestamp when data was fetched",
+            "example": "2024-02-25T15:30:00Z"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages",
+          "fetchedAt"
+        ]
+      },
       "NewsArticleDto": {
         "type": "object",
         "properties": {
@@ -45449,33 +45503,6 @@
           "relatedCoins"
         ]
       },
-      "NewsArticlesResponseDto": {
-        "type": "object",
-        "properties": {
-          "articles": {
-            "description": "List of news articles",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/NewsArticleDto"
-            }
-          },
-          "totalCount": {
-            "type": "number",
-            "description": "Total number of articles",
-            "example": 150
-          },
-          "fetchedAt": {
-            "type": "string",
-            "description": "Timestamp when data was fetched",
-            "example": "2024-02-25T15:30:00Z"
-          }
-        },
-        "required": [
-          "articles",
-          "totalCount",
-          "fetchedAt"
-        ]
-      },
       "NewsSearchResponseDto": {
         "type": "object",
         "properties": {
@@ -45567,6 +45594,7 @@
           "article": {
             "nullable": true,
             "description": "Article details",
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/NewsArticleDto"
@@ -45662,31 +45690,39 @@
             "type": "number",
             "example": 42
           },
-          "limit": {
+          "page": {
             "type": "number",
+            "description": "Current page number (1-indexed)",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
             "example": 20
           },
-          "offset": {
+          "totalPages": {
             "type": "number",
-            "example": 0
+            "description": "Total number of pages (always ≥ 1)",
+            "example": 3
           }
         },
         "required": [
           "items",
           "total",
-          "limit",
-          "offset"
+          "page",
+          "pageSize",
+          "totalPages"
         ]
       },
       "EcosystemEntityDto": {
         "type": "object",
         "properties": {
           "kind": {
-            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
+            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -45765,11 +45801,11 @@
         "type": "object",
         "properties": {
           "kind": {
-            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
+            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -45858,6 +45894,7 @@
           },
           "conditions": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Optional conditions",
             "example": {
               "roles": [
@@ -45890,7 +45927,11 @@
             "example": "new-onboarding-flow"
           },
           "action": {
-            "type": "object",
+            "enum": [
+              "remove",
+              "upsert"
+            ],
+            "type": "string",
             "description": "Action performed: 'upsert' | 'remove'",
             "example": "upsert"
           },
@@ -45908,6 +45949,7 @@
           },
           "previousTargeting": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) before this mutation; null if the flag did not exist",
             "example": {
@@ -45918,6 +45960,7 @@
           },
           "newTargeting": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) after this mutation; null for removals",
             "example": {
@@ -46067,6 +46110,7 @@
           },
           "conditions": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Optional conditions (e.g. user roles, specific user IDs)",
             "example": {
               "roles": [
@@ -46083,69 +46127,6 @@
         "required": [
           "key",
           "enabled"
-        ]
-      },
-      "FeatureFlag": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "key": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "rolloutPercentage": {
-            "type": "number",
-            "nullable": true,
-            "description": "Percentage of principals (0-100) the flag targets, or null for no rollout.\n\nWhen set, this value alone determines the evaluation result — `enabled` is\nnot consulted — so a rollout can serve a fraction of users and later be\nwidened. 0 is a real value meaning \"serve nobody\", which makes it the\nsingle-field kill switch. Null leaves the flag on plain on/off."
-          },
-          "allowList": {
-            "nullable": true,
-            "description": "Principal IDs always granted the flag, regardless of the rollout percentage.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "denyList": {
-            "nullable": true,
-            "description": "Principal IDs always denied the flag; takes precedence over `allowList`.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "conditions": {
-            "type": "object",
-            "nullable": true
-          },
-          "changedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "key",
-          "enabled",
-          "rolloutPercentage",
-          "allowList",
-          "denyList",
-          "conditions",
-          "changedBy",
-          "createdAt",
-          "updatedAt"
         ]
       },
       "RoadmapItemDto": {
@@ -46407,7 +46388,12 @@
             "example": "a1b2c3d4..."
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "PENDING",
+              "SUCCESS",
+              "FAILED"
+            ],
+            "type": "string",
             "description": "Status of the contribution on ledger",
             "example": "SUCCESS"
           },
@@ -46521,7 +46507,12 @@
             "type": "number"
           },
           "status": {
-            "type": "object"
+            "type": "string",
+            "enum": [
+              "success",
+              "failed",
+              "partial"
+            ]
           },
           "error": {
             "type": "string"
@@ -46535,10 +46526,6 @@
           "eventsProcessed",
           "status"
         ]
-      },
-      "Object": {
-        "type": "object",
-        "properties": {}
       },
       "VaultSyncStatsDto": {
         "type": "object",
@@ -46651,7 +46638,10 @@
             "type": "string"
           },
           "byVault": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
           }
         },
         "required": [
@@ -46694,7 +46684,8 @@
             "type": "number"
           },
           "rawPayload": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": true
           },
           "failureCount": {
             "type": "number"
@@ -46842,6 +46833,7 @@
           },
           "rawPayload": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Raw event payload as emitted by the Soroban contract (event data)",
             "example": {
               "from": "GBUQWP3BOUZX34ULNQG23RQ6F4BWFIREXOWJ2GY2FOLGABIDESX56JP2",
@@ -46887,13 +46879,13 @@
             "example": "transfer"
           },
           "status": {
-            "type": "string",
-            "description": "Current processing status of the event",
             "enum": [
               "PENDING",
               "PROCESSED",
               "FAILED"
             ],
+            "type": "string",
+            "description": "Current processing status of the event",
             "example": "PENDING"
           },
           "createdAt": {
@@ -47350,7 +47342,6 @@
           },
           "githubHandle": {
             "type": "string",
-            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           }
@@ -47389,7 +47380,6 @@
           },
           "githubHandle": {
             "type": "string",
-            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           },
@@ -47691,6 +47681,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           }
         },
@@ -48187,6 +48178,7 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "example": {
               "contributor_registry": {
                 "id": "CCOVDGHF3XQ5RAFY6DJ36G6CHQJF54QCOBZXCC3LBMKNEWQJLDGXQJSB"
@@ -48195,6 +48187,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "isActive": {
@@ -48271,6 +48264,7 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Contract deployment records keyed by contract name",
             "example": {
               "contributor_registry": {
@@ -48281,6 +48275,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Environment metadata (RPC URL, admin addresses, deployment notes)",
             "example": {
               "rpc_url": "https://soroban-testnet.stellar.org:443"
@@ -48312,10 +48307,12 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Contract deployment records"
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Environment metadata"
           },
           "isActive": {
@@ -48452,6 +48449,7 @@
           },
           "seededData": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Summary of currently seeded data"
           }
         },
@@ -48502,6 +48500,7 @@
           },
           "details": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Details about seeded entities"
           }
         },
@@ -48536,12 +48535,20 @@
             "description": "Run identifier — pass this to the teardown endpoint"
           },
           "kind": {
-            "type": "object",
+            "enum": [
+              "demo_seed",
+              "testnet_account"
+            ],
+            "type": "string",
             "description": "What produced the run",
             "example": "demo_seed"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "active",
+              "torn_down"
+            ],
+            "type": "string",
             "description": "Run status",
             "example": "active"
           },
@@ -48609,7 +48616,12 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "object",
+            "enum": [
+              "testnet_account",
+              "demo_contributor",
+              "demo_grant_round"
+            ],
+            "type": "string",
             "description": "Resource type",
             "example": "demo_contributor"
           },
@@ -48624,14 +48636,14 @@
             "example": "Demo contributor demo-alice"
           },
           "action": {
-            "type": "string",
-            "description": "What happened, or would happen in a dry run",
             "enum": [
               "removed",
               "would_remove",
               "not_found",
               "skipped"
             ],
+            "type": "string",
+            "description": "What happened, or would happen in a dry run",
             "example": "removed"
           },
           "reason": {
@@ -48767,6 +48779,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Additional metadata for profile or moderation UIs"
           }
         },
@@ -48795,17 +48808,17 @@
           },
           "page": {
             "type": "number",
-            "description": "Current page number",
+            "description": "Current page number (1-indexed)",
             "example": 1
           },
-          "limit": {
+          "pageSize": {
             "type": "number",
-            "description": "Items per page",
+            "description": "Number of items per page",
             "example": 20
           },
           "totalPages": {
             "type": "number",
-            "description": "Total number of pages",
+            "description": "Total number of pages (always ≥ 1)",
             "example": 3
           },
           "isSparseContributor": {
@@ -48818,7 +48831,7 @@
           "items",
           "total",
           "page",
-          "limit",
+          "pageSize",
           "totalPages",
           "isSparseContributor"
         ]
@@ -48944,6 +48957,7 @@
           },
           "progressDetails": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -49057,6 +49071,7 @@
           },
           "progressDetails": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -49316,12 +49331,12 @@
           },
           "filters": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            },
-            "additionalProperties": true
+            }
           },
           "isSubscribed": {
             "type": "boolean",
@@ -49428,12 +49443,12 @@
           },
           "filters": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            },
-            "additionalProperties": true
+            }
           },
           "isSubscribed": {
             "type": "boolean",
@@ -49442,6 +49457,42 @@
             "example": true
           }
         }
+      },
+      "ProjectListResponseDto": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "List of items for the current page"
+          },
+          "total": {
+            "type": "number",
+            "description": "Total number of items matching the query",
+            "example": 42
+          },
+          "page": {
+            "type": "number",
+            "description": "Current page number (1-indexed)",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "description": "Number of items per page",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "description": "Total number of pages",
+            "example": 3
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "pageSize",
+          "totalPages"
+        ]
       },
       "ProjectMetadataDto": {
         "type": "object",
@@ -49475,6 +49526,9 @@
           },
           "socialLinks": {
             "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Social media links"
           }
         },
@@ -49550,88 +49604,6 @@
           "vault",
           "lastTxHash",
           "lastSyncedAt"
-        ]
-      },
-      "ProjectListItemDto": {
-        "type": "object",
-        "properties": {
-          "projectId": {
-            "type": "string",
-            "description": "Project ID"
-          },
-          "owner": {
-            "type": "string",
-            "description": "Owner address"
-          },
-          "metadata": {
-            "description": "Project metadata",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ProjectMetadataDto"
-              }
-            ]
-          },
-          "onChainStatus": {
-            "description": "On-chain status",
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/OnChainStatusDto"
-              }
-            ]
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Creation timestamp"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string",
-            "description": "Last update timestamp"
-          }
-        },
-        "required": [
-          "projectId",
-          "owner",
-          "metadata",
-          "onChainStatus",
-          "createdAt",
-          "updatedAt"
-        ]
-      },
-      "ProjectListResponseDto": {
-        "type": "object",
-        "properties": {
-          "projects": {
-            "description": "Array of projects",
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/ProjectListItemDto"
-            }
-          },
-          "total": {
-            "type": "number",
-            "description": "Total number of projects"
-          },
-          "page": {
-            "type": "number",
-            "description": "Current page number"
-          },
-          "limit": {
-            "type": "number",
-            "description": "Items per page"
-          },
-          "totalPages": {
-            "type": "number",
-            "description": "Total number of pages"
-          }
-        },
-        "required": [
-          "projects",
-          "total",
-          "page",
-          "limit",
-          "totalPages"
         ]
       },
       "ProjectDetailDto": {

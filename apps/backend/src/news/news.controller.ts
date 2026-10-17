@@ -114,11 +114,12 @@ export class NewsController {
       }));
     } else {
       // Fetch enough to satisfy pagination; provider is already capped at 100
-      const providerResponse =
-        await this.newsProviderService.getLatestArticles({
+      const providerResponse = await this.newsProviderService.getLatestArticles(
+        {
           limit: pagination.pageSize,
           lang,
-        });
+        },
+      );
       allArticles = providerResponse.articles;
     }
 

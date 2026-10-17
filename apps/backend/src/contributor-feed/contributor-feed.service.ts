@@ -118,10 +118,7 @@ export class ContributorFeedService {
     });
 
     const total = filtered.length;
-    const totalPages = Math.max(
-      1,
-      Math.ceil(total / resolved.pageSize),
-    );
+    const totalPages = Math.max(1, Math.ceil(total / resolved.pageSize));
     const pageItems = filtered.slice(
       resolved.offset,
       resolved.offset + resolved.pageSize,

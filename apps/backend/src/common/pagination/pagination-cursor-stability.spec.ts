@@ -12,7 +12,10 @@
  */
 import { Test, TestingModule } from '@nestjs/testing';
 import { ContributorFeedService } from '../../contributor-feed/contributor-feed.service';
-import { FeedActivityType, FeedSortOrder } from '../../contributor-feed/dto/contributor-feed.dto';
+import {
+  FeedActivityType,
+  FeedSortOrder,
+} from '../../contributor-feed/dto/contributor-feed.dto';
 import { resolvePagination } from './pagination-response.dto';
 
 /**
@@ -94,7 +97,11 @@ describe('Pagination cursor stability (unit)', () => {
       seedActivities(svc, 10);
 
       // Capture page 1 (oldest-first / ASC) before any insert
-      const before = svc.getFeed({ page: 1, pageSize: 5, sortOrder: FeedSortOrder.ASC });
+      const before = svc.getFeed({
+        page: 1,
+        pageSize: 5,
+        sortOrder: FeedSortOrder.ASC,
+      });
       const beforeIds = before.items.map((i) => i.id);
 
       // Insert a NEW item with a fresh (later) timestamp — simulates concurrent insert
@@ -105,7 +112,11 @@ describe('Pagination cursor stability (unit)', () => {
       });
 
       // Re-fetch page 1 (same params)
-      const after = svc.getFeed({ page: 1, pageSize: 5, sortOrder: FeedSortOrder.ASC });
+      const after = svc.getFeed({
+        page: 1,
+        pageSize: 5,
+        sortOrder: FeedSortOrder.ASC,
+      });
       const afterIds = after.items.map((i) => i.id);
 
       // Page 1 must be unchanged — the new item should appear on a later page
@@ -119,7 +130,11 @@ describe('Pagination cursor stability (unit)', () => {
       const seenIds = new Set<string>();
 
       for (let p = 1; p <= 3; p++) {
-        const result = svc.getFeed({ page: p, pageSize, sortOrder: FeedSortOrder.DESC });
+        const result = svc.getFeed({
+          page: p,
+          pageSize,
+          sortOrder: FeedSortOrder.DESC,
+        });
         for (const item of result.items) {
           expect(seenIds.has(item.id)).toBe(false);
           seenIds.add(item.id);

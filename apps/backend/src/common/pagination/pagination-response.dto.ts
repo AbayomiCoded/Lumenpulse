@@ -103,5 +103,9 @@ export function paginatedResponse<T>(
   // A named class is returned at runtime so @nestjs/swagger generates a
   // stable schema name. The body is a thin wrapper that forwards to the
   // abstract base.
-  return class extends PaginatedResponseDto<T> {};
+  return class extends PaginatedResponseDto<T> {
+    constructor(items: T[], pagination: ResolvedPagination, total: number) {
+      super(items, pagination, total);
+    }
+  };
 }
