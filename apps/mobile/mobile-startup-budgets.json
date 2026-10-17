@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "unit": "milliseconds",
+  "description": "Cold/warm startup and time-to-interactive budgets for apps/mobile, measured on the Expo web build under a throttled low-end profile (Pixel 5 + 4× CPU + Fast 3G). Enforced by scripts/check-mobile-startup.mjs; see docs/app-startup-budget.md.",
+  "profile": "low-end-web",
+  "notes": [
+    "Measurements are produced by e2e/startup-budget.spec.ts and written to mobile-startup-measurements.json (gitignored).",
+    "CI emits ::warning:: when a metric passes warningMs; exceeding maxMs fails the job.",
+    "Native cold start is not measured in CI (no emulator on default runners); these numbers proxy bundle parse + first paint on web."
+  ],
+  "metrics": {
+    "coldStartMs": {
+      "baselineMs": 4500,
+      "warningMs": 6000,
+      "maxMs": 9000
+    },
+    "warmStartMs": {
+      "baselineMs": 1800,
+      "warningMs": 2800,
+      "maxMs": 4500
+    },
+    "timeToInteractiveMs": {
+      "baselineMs": 5500,
+      "warningMs": 7500,
+      "maxMs": 11000
+    }
+  }
+}
