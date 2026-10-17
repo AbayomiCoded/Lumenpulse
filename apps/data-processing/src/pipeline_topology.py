@@ -39,6 +39,7 @@ class StageSpec:
     name: str
     schedule: str
     depends_on: Tuple[str, ...] = field(default=())
+    consumes_datasets: Tuple[str, ...] = field(default=())
 
 
 # Canonical stage list. Ids/names/schedules mirror ``AnalyticsScheduler``.
@@ -47,27 +48,50 @@ PIPELINE_STAGES: List[StageSpec] = [
         id="market_analyzer_hourly",
         name="Market Analyzer - Hourly Analytics",
         schedule="Every hour",
+        consumes_datasets=(
+            "news_articles",
+            "price_ticks",
+            "social_posts",
+            "sentiment_compound",
+        ),
     ),
     StageSpec(
         id="stellar_ingestion_quality_checks_hourly",
         name="Stellar Ingestion Quality Checks - Hourly",
         schedule="Every hour",
+        consumes_datasets=("stellar_ledger_events", "contract_events"),
     ),
     StageSpec(
         id="ingestion_lag_alerting",
         name="Indexer Lag and Source Failure Alerting",
         schedule="Every INGESTION_ALERT_INTERVAL_MINUTES minutes (default 5)",
+        consumes_datasets=(
+            "news_articles",
+            "price_ticks",
+            "social_posts",
+            "stellar_ledger_events",
+            "contract_events",
+            "analytics_records",
+        ),
     ),
     StageSpec(
         id="model_retraining_daily",
         name="Automated Model Retraining - Daily",
         schedule="Daily at 02:00 UTC",
         depends_on=("market_analyzer_hourly",),
+        consumes_datasets=(
+            "news_articles",
+            "price_ticks",
+            "social_posts",
+            "price_predictor_features",
+            "sentiment_model_features",
+        ),
     ),
     StageSpec(
         id="project_verification_trend",
         name="Project Verification Trend Analyzer",
         schedule="Every 6 hours",
+        consumes_datasets=("contract_events",),
     ),
     StageSpec(
         id="rpc_provider_benchmark",
@@ -78,11 +102,13 @@ PIPELINE_STAGES: List[StageSpec] = [
         id="round_anomaly_detection",
         name="Round Anomaly Detection",
         schedule="Every 6 hours",
+        consumes_datasets=("contract_events",),
     ),
     StageSpec(
         id="contributor_reputation_snapshot_daily",
         name="Contributor Reputation Snapshot Builder",
         schedule="Daily at 03:30 UTC",
+        consumes_datasets=("contract_events",),
     ),
     StageSpec(
         id="metadata_drift_detection",
@@ -100,16 +126,19 @@ PIPELINE_STAGES: List[StageSpec] = [
         name="KPI Reconciler against Live Contract Reads",
         schedule="Every 6 hours",
         depends_on=("daily_onchain_kpi_snapshot",),
+        consumes_datasets=("contract_events", "analytics_records"),
     ),
     StageSpec(
         id="daily_onchain_kpi_snapshot",
         name="Daily On-Chain KPI Snapshot Scheduler",
         schedule="Daily at 00:05 UTC",
+        consumes_datasets=("contract_events",),
     ),
     StageSpec(
         id="contract_ingestion_lag_metrics",
         name="Per-Contract Ingestion Lag Metrics",
         schedule="Every CONTRACT_LAG_INTERVAL_MINUTES minutes (default 5)",
+        consumes_datasets=("stellar_ledger_events", "contract_events"),
     ),
     StageSpec(
         id="prediction_logs_cleanup",
