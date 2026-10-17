@@ -218,12 +218,30 @@ def _get_embedding_service() -> Any:
 
 
 @app.on_event("startup")
-async def _reconcile_orphaned_analytics_jobs() -> None:
+async def _startup() -> None:
     """
-    Any job still queued/running at startup belongs to a process that died
-    before finishing it (#1248) — report the loss instead of leaving it
-    stuck forever.
+    Runs on every uvicorn worker startup.
+
+    1. Pre-warm the in-memory model cache so the first real request never
+       pays a cold-start disk read (issue #1628: inference-service startup).
+    2. Reconcile any analytics jobs that were left queued/running by a process
+       that died before finishing them (#1248).
     """
+    # ── 1. Pre-warm models (issue #1628) ──────────────────────────────────
+    # Import is lazy so this module stays importable even in minimal test
+    # contexts where the models/ directory does not exist.
+    try:
+        from src.ml.model_loader import warm_models, INFERENCE_MODELS
+
+        warm_models(*INFERENCE_MODELS)
+    except Exception as exc:
+        logger.warning(
+            "Model pre-warm at startup failed (non-fatal — endpoints will "
+            "attempt cold load on first request): %s",
+            exc,
+        )
+
+    # ── 2. Reconcile orphaned async jobs (#1248) ──────────────────────────
     from src.jobs.manager import reconcile_orphaned_jobs
 
     reconcile_orphaned_jobs(postgres_service)
