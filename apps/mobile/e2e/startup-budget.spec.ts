@@ -31,8 +31,21 @@ async function navigationReadyMs(page: Page): Promise<number> {
   });
 }
 
+async function waitForAppInteractive(page: Page): Promise<void> {
+  // Marker view is intentionally 0×0 (not user-visible); Playwright treats it as hidden.
+  await page.waitForFunction(
+    () => {
+      const boot = (globalThis as { __LUMENPULSE_STARTUP__?: { timeToInteractiveMs: number | null } })
+        .__LUMENPULSE_STARTUP__;
+      return boot?.timeToInteractiveMs != null;
+    },
+    { timeout: 20_000 },
+  );
+  await expect(page.getByTestId('app-interactive')).toBeAttached();
+}
+
 async function timeToInteractiveMs(page: Page): Promise<number> {
-  await expect(page.getByTestId('app-interactive')).toBeVisible({ timeout: 20_000 });
+  await waitForAppInteractive(page);
   return page.evaluate(() => {
     const boot = (globalThis as { __LUMENPULSE_STARTUP__?: { timeToInteractiveMs: number | null } })
       .__LUMENPULSE_STARTUP__;
@@ -57,7 +70,7 @@ test.describe('Startup budget (low-end profile)', () => {
 
     await page.reload({ waitUntil: 'domcontentloaded' });
     const warmStartMs = await navigationReadyMs(page);
-    await expect(page.getByTestId('app-interactive')).toBeVisible({ timeout: 20_000 });
+    await waitForAppInteractive(page);
 
     const payload = {
       profile: 'low-end-web',

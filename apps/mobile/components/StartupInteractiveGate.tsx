@@ -9,7 +9,8 @@ type Props = {
 
 /**
  * Marks time-to-interactive after React has painted and the interaction queue
- * is idle. Exposes `testID="app-interactive"` for the startup budget E2E spec.
+ * is idle. Exposes `testID="app-interactive"` (0×0 sentinel; E2E waits on
+ * `__LUMENPULSE_STARTUP__.timeToInteractiveMs`, not visibility).
  */
 export function StartupInteractiveGate({ children }: Props) {
   const [interactive, setInteractive] = useState(false);
