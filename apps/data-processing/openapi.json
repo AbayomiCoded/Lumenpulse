@@ -458,7 +458,7 @@
           "kpi"
         ],
         "summary": "Get Kpi Series",
-        "description": "Get KPI time series data.\n\nArgs:\n    start_date: Start date (inclusive)\n    end_date: End date (inclusive)\n    period: Time period granularity\n\nReturns:\n    List of KPI snapshots over time.",
+        "description": "Get KPI time series data with pagination and a hard max page size (#1458).\n\nResponse headers: X-Total-Count, X-Limit, X-Offset, X-Has-More, X-Max-Page-Size.\nOrdering is stable: snapshot_date ASC, id ASC.",
         "operationId": "get_kpi_series_api_kpi_series_get",
         "parameters": [
           {
@@ -508,6 +508,33 @@
               "title": "Period"
             },
             "description": "Period granularity (daily, hourly)"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Page size (max 500; uncapped responses are rejected)",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Page size (max 500; uncapped responses are rejected)"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of rows to skip (stable ascending date order)",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of rows to skip (stable ascending date order)"
           }
         ],
         "responses": {
@@ -1564,6 +1591,50 @@
         }
       }
     },
+    "/api/pipeline/topology": {
+      "get": {
+        "tags": [
+          "Pipeline"
+        ],
+        "summary": "Get Pipeline Topology",
+        "description": "Return the pipeline topology: each scheduled stage, its schedule and dependencies, and its latest run (last run, duration, outcome).",
+        "operationId": "get_pipeline_topology_api_pipeline_topology_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineTopologyResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/pipeline/datasets": {
+      "get": {
+        "tags": [
+          "Pipeline"
+        ],
+        "summary": "Get Pipeline Datasets",
+        "description": "Return the validated dataset inventory and its owners and consumers.",
+        "operationId": "get_pipeline_datasets_api_pipeline_datasets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatasetRegistryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/metrics": {
       "get": {
         "summary": "Metrics",
@@ -1876,6 +1947,45 @@
         }
       }
     },
+    "/price/predict": {
+      "post": {
+        "summary": "Predict Price",
+        "description": "Serve the promoted price model and log every ensemble member's contribution.",
+        "operationId": "predict_price_price_predict_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricePredictionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PricePredictionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/analyze": {
       "post": {
         "summary": "Analyze Text",
@@ -2090,6 +2200,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ModelStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/model/cost-report": {
+      "get": {
+        "summary": "Model Cost Report",
+        "description": "Serving compute cost report (#1643).\n\nReturns cost attributed per model version and per endpoint, cost per\nthousand inferences for each model, the cost delta of a newly promoted\nmodel against its predecessor, and the three most expensive serving\npaths. The same data is exported as Prometheus metrics on ``/metrics``\nalongside the stage-level profiling from #1454.\n\nRequires X-API-Key header.",
+        "operationId": "model_cost_report_model_cost_report_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Model Cost Report Model Cost Report Get"
                 }
               }
             }
@@ -2547,7 +2678,7 @@
     "/correlation/analyze": {
       "post": {
         "summary": "Analyze Correlation",
-        "description": "Submit a correlation analysis between sentiment and price/volume data to\nthe async job queue and return immediately with a job identifier.\n\nPoll GET /api/jobs/{job_id} for the result: price_correlation,\nvolume_correlation, and summary (correlation scores -1 to 1 and scatter\nplot data points). Requires X-API-Key header.",
+        "description": "Submit a correlation analysis between sentiment and price/volume data to\nthe async job queue and return immediately with a job identifier.\n\nPoll GET /api/jobs/{job_id} for the result: price_correlation,\nvolume_correlation, and summary (correlation scores -1 to 1 and scatter\nplot data points). Requires X-API-Key header.\n\nInput series are capped at MAX_CORRELATION_POINTS (#1458).",
         "operationId": "analyze_correlation_correlation_analyze_post",
         "requestBody": {
           "content": {
@@ -2586,7 +2717,7 @@
     "/correlation/lag-analysis": {
       "post": {
         "summary": "Analyze Lag Correlation",
-        "description": "Submit a lagged correlation analysis to the async job queue and return\nimmediately with a job identifier.\n\nPoll GET /api/jobs/{job_id} for the result: best_lag_hours,\nbest_correlation, lag_analysis, and recommendation. Requires X-API-Key\nheader.",
+        "description": "Submit a lagged correlation analysis to the async job queue and return\nimmediately with a job identifier.\n\nPoll GET /api/jobs/{job_id} for the result: best_lag_hours,\nbest_correlation, lag_analysis, and recommendation. Requires X-API-Key\nheader.\n\nInput series are capped at MAX_CORRELATION_POINTS (#1458).",
         "operationId": "analyze_lag_correlation_correlation_lag_analysis_post",
         "requestBody": {
           "content": {
@@ -2625,7 +2756,7 @@
     "/analytics/kpis/daily-snapshots": {
       "get": {
         "summary": "Get Daily Kpi Snapshots",
-        "description": "Retrieve historical daily on-chain KPI snapshots.\nRequires X-API-Key header.",
+        "description": "Retrieve historical daily on-chain KPI snapshots with pagination (#1458).\n\nStable ordering: snapshot_date DESC, id DESC.\nResponse headers: X-Total-Count, X-Limit, X-Offset, X-Has-More, X-Max-Page-Size.\nFor genuinely large exports use GET /analytics/kpis/daily-snapshots/stream.\nRequires X-API-Key header.",
         "operationId": "get_daily_kpi_snapshots_analytics_kpis_daily_snapshots_get",
         "parameters": [
           {
@@ -2684,9 +2815,24 @@
               "type": "integer",
               "maximum": 500,
               "minimum": 1,
+              "description": "Page size (max 500; uncapped responses are rejected)",
               "default": 100,
               "title": "Limit"
-            }
+            },
+            "description": "Page size (max 500; uncapped responses are rejected)"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of rows to skip (stable snapshot_date DESC, id DESC order)",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of rows to skip (stable snapshot_date DESC, id DESC order)"
           }
         ],
         "responses": {
@@ -2701,6 +2847,97 @@
                   },
                   "title": "Response Get Daily Kpi Snapshots Analytics Kpis Daily Snapshots Get"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/kpis/daily-snapshots/stream": {
+      "get": {
+        "summary": "Stream Daily Kpi Snapshots",
+        "description": "Stream daily on-chain KPI snapshots as NDJSON for large exports (#1458).\n\nWalks pages server-side with stable ordering so callers never need an\nuncapped in-memory response. Requires X-API-Key header.",
+        "operationId": "stream_daily_kpi_snapshots_analytics_kpis_daily_snapshots_stream_get",
+        "parameters": [
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Start date (YYYY-MM-DD)",
+              "title": "Start Date"
+            },
+            "description": "Start date (YYYY-MM-DD)"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "End date (YYYY-MM-DD)",
+              "title": "End Date"
+            },
+            "description": "End date (YYYY-MM-DD)"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "description": "Period type (default: daily)",
+              "default": "daily",
+              "title": "Period"
+            },
+            "description": "Period type (default: daily)"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 500,
+              "minimum": 1,
+              "description": "Internal page size used while streaming",
+              "default": 100,
+              "title": "Page Size"
+            },
+            "description": "Internal page size used while streaming"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           },
@@ -2845,7 +3082,14 @@
       "AnalyzeResponse": {
         "properties": {
           "sentiment": {
-            "type": "number",
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
             "title": "Sentiment"
           },
           "asset_codes": {
@@ -2880,6 +3124,21 @@
                 "type": "null"
               }
             ]
+          },
+          "scored": {
+            "type": "boolean",
+            "title": "Scored",
+            "default": true
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "default": 1.0
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "default": "scored"
           }
         },
         "type": "object",
@@ -3583,6 +3842,96 @@
         ],
         "title": "DailyKPISnapshotResponse"
       },
+      "DatasetRegistryEntry": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "owner": {
+            "type": "string",
+            "title": "Owner"
+          },
+          "schema": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Schema"
+          },
+          "update_cadence": {
+            "type": "string",
+            "title": "Update Cadence"
+          },
+          "retention": {
+            "type": "string",
+            "title": "Retention"
+          },
+          "model_consumers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Model Consumers"
+          },
+          "pipeline_stages": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Pipeline Stages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "display_name",
+          "description",
+          "owner",
+          "schema",
+          "update_cadence",
+          "retention",
+          "model_consumers",
+          "pipeline_stages"
+        ],
+        "title": "DatasetRegistryEntry",
+        "description": "Registry metadata for one data-processing dataset."
+      },
+      "DatasetRegistryResponse": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetRegistryEntry"
+            },
+            "type": "array",
+            "title": "Datasets"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "count",
+          "datasets"
+        ],
+        "title": "DatasetRegistryResponse",
+        "description": "All registered datasets and their operational metadata."
+      },
       "ForecastResponse": {
         "properties": {
           "predicted_trend_24h": {
@@ -3624,6 +3973,11 @@
           "generated_at": {
             "type": "string",
             "title": "Generated At"
+          },
+          "confidence_indication": {
+            "type": "string",
+            "title": "Confidence Indication",
+            "default": "low"
           }
         },
         "type": "object",
@@ -4826,6 +5180,85 @@
         "title": "OperationResponse",
         "description": "Response model for account operation."
       },
+      "PipelineTopologyResponse": {
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "title": "Generated At"
+          },
+          "stages": {
+            "items": {
+              "$ref": "#/components/schemas/StageStatus"
+            },
+            "type": "array",
+            "title": "Stages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "generated_at",
+          "stages"
+        ],
+        "title": "PipelineTopologyResponse",
+        "description": "The full pipeline topology response."
+      },
+      "PricePredictionRequest": {
+        "properties": {
+          "features": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object",
+            "title": "Features"
+          },
+          "schema_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Schema Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "features"
+        ],
+        "title": "PricePredictionRequest"
+      },
+      "PricePredictionResponse": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "member_contributions": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Member Contributions"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictions",
+          "member_contributions",
+          "model_version"
+        ],
+        "title": "PricePredictionResponse"
+      },
       "RebuildRequest": {
         "properties": {
           "dataset": {
@@ -5125,6 +5558,11 @@
               }
             ],
             "title": "Target Version"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "default": "Operator-requested rollback"
           }
         },
         "type": "object",
@@ -5536,6 +5974,87 @@
           "message"
         ],
         "title": "ShadowUnregisterResponse"
+      },
+      "StageStatus": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "schedule": {
+            "type": "string",
+            "title": "Schedule"
+          },
+          "depends_on": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Depends On"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "last_run": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run"
+          },
+          "duration_seconds": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Seconds"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "schedule",
+          "depends_on",
+          "status"
+        ],
+        "title": "StageStatus",
+        "description": "One pipeline stage plus the outcome of its most recent run."
       },
       "TokenContributionResponse": {
         "properties": {

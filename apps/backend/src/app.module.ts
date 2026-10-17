@@ -64,6 +64,7 @@ import { CrowdfundSyncModule } from './crowdfund-sync/crowdfund-sync.module';
 import { ContributorRegistryModule } from './contributor-registry/contributor-registry.module';
 import { AuditModule } from './audit/audit.module';
 import { AuditLogInterceptor } from './audit/interceptors/audit-log.interceptor';
+import { DataRetentionModule } from './data-retention/data-retention.module';
 import { SorobanEventsModule } from './soroban-events/soroban-events.module';
 import { TreasuryModule } from './treasury/treasury.module';
 import { VestingWalletModule } from './vesting-wallet/vesting-wallet.module';
@@ -83,6 +84,7 @@ import { PriceAlertModule } from './price-alert/price-alert.module';
 import { ProfilingModule } from './common/profiling/profiling.module';
 import { QueryCountMiddleware } from './common/profiling/query-count.middleware';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { SavedSearchesModule } from './saved-searches/saved-searches.module';
 
 @Module({
   imports: [
@@ -177,6 +179,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
     // Audit
     AuditModule,
 
+    // Data retention and user erasure
+    DataRetentionModule,
+
     // Soroban event processing
     SorobanEventsModule,
 
@@ -226,6 +231,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
 
     // Aggregated, cached dashboard read model
     DashboardModule,
+
+    // Saved searches & subscriptions
+    SavedSearchesModule,
   ],
   controllers: [AppController, TestController, TestExceptionController],
   providers: [

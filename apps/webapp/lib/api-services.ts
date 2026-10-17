@@ -222,6 +222,23 @@ export interface AllocationAsset {
   percentage: number;
 }
 
+export interface PortfolioAllocationResponse {
+  totalValueUsd: number;
+  allocation: AllocationAsset[];
+}
+
+export type PortfolioAnomalyStatus =
+  components['schemas']['ReviewPortfolioAnomalyDto']['status'];
+export type PortfolioAnomaly =
+  components['schemas']['PortfolioAnomalyResponseDto'];
+export type PortfolioAnomaliesResponse =
+  components['schemas']['PortfolioAnomaliesListResponseDto'];
+
+function getApiErrorMessage(body: unknown): string | null {
+  if (typeof body !== 'object' || body === null || !('message' in body)) return null;
+  return typeof body.message === 'string' && body.message ? body.message : null;
+}
+
 export class PortfolioApiService {
   private static readonly BASE_URL =
     clientConfig.apiUrl;
@@ -292,7 +309,7 @@ export class PortfolioApiService {
    */
   static async getAllocation(
     signal?: AbortSignal,
-  ): Promise<AllocationAsset[]> {
+  ): Promise<PortfolioAllocationResponse> {
     const response = await fetch(`${this.BASE_URL}/portfolio/allocation`, {
       headers: this.getAuthHeaders(),
       signal,
@@ -300,6 +317,52 @@ export class PortfolioApiService {
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
       throw new Error((err as any).message || `Portfolio allocation fetch failed (${response.status})`);
+    }
+    return response.json();
+  }
+
+  /**
+   * GET /portfolio/anomalies?userId=...
+   * The backend limits this endpoint to reviewer and admin roles.
+   */
+  static async getAnomalies(
+    userId: string,
+    signal?: AbortSignal,
+  ): Promise<PortfolioAnomaliesResponse> {
+    const response = await fetch(
+      `${this.BASE_URL}/portfolio/anomalies?userId=${encodeURIComponent(userId)}`,
+      { headers: this.getAuthHeaders(), signal },
+    );
+    if (!response.ok) {
+      const err: unknown = await response.json().catch(() => ({}));
+      throw new Error(
+        getApiErrorMessage(err) || `Portfolio anomalies fetch failed (${response.status})`,
+      );
+    }
+    return response.json();
+  }
+
+  /**
+   * POST /portfolio/anomalies/:id/review
+   * The backend limits this endpoint to reviewer and admin roles.
+   */
+  static async reviewAnomaly(
+    id: string,
+    status: PortfolioAnomalyStatus,
+  ): Promise<PortfolioAnomaly> {
+    const response = await fetch(
+      `${this.BASE_URL}/portfolio/anomalies/${encodeURIComponent(id)}/review`,
+      {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ status }),
+      },
+    );
+    if (!response.ok) {
+      const err: unknown = await response.json().catch(() => ({}));
+      throw new Error(
+        getApiErrorMessage(err) || `Portfolio anomaly review failed (${response.status})`,
+      );
     }
     return response.json();
   }
@@ -511,5 +574,102 @@ export class ProjectApiService {
       throw new Error(`Failed to load project stats: ${response.statusText}`);
     }
     return response.json();
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Export API — interfaces mirroring backend DTOs
+// ---------------------------------------------------------------------------
+
+export type ExportType = components['schemas']['CreateExportJobDto']['type'];
+export type ExportStatus = components['schemas']['ExportJobResponseDto']['status'];
+export type ExportJobResponse = components['schemas']['ExportJobResponseDto'];
+
+export class ExportApiService {
+  private static readonly BASE_URL = clientConfig.apiUrl;
+
+  private static getAuthHeaders(): Record<string, string> {
+    if (typeof document === 'undefined') return { 'Content-Type': 'application/json' };
+    const match = document.cookie
+      .split('; ')
+      .find((row) => row.startsWith('auth-token='));
+    const token = match?.split('=')[1];
+    return {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    };
+  }
+
+  /**
+   * Returns true when an auth token cookie is present.
+   * Used by the hook to skip fetching for unauthenticated visitors.
+   */
+  static isAuthenticated(): boolean {
+    if (typeof document === 'undefined') return false;
+    return document.cookie.split('; ').some((row) => row.startsWith('auth-token='));
+  }
+
+  /**
+   * POST /exports
+   * Create an async export job
+   */
+  static async createJob(type: ExportType): Promise<ExportJobResponse> {
+    const response = await fetch(`${this.BASE_URL}/exports`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ type }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error((err as any).message || `Export job creation failed (${response.status})`);
+    }
+    return response.json();
+  }
+
+  /**
+   * GET /exports
+   * List recent export jobs for the current user
+   */
+  static async listJobs(): Promise<ExportJobResponse[]> {
+    const response = await fetch(`${this.BASE_URL}/exports`, {
+      headers: this.getAuthHeaders(),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error((err as any).message || `Export jobs fetch failed (${response.status})`);
+    }
+    return response.json();
+  }
+
+  /**
+   * GET /exports/:id
+   * Get export job status
+   */
+  static async getJob(id: string): Promise<ExportJobResponse> {
+    const response = await fetch(`${this.BASE_URL}/exports/${id}`, {
+      headers: this.getAuthHeaders(),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error((err as any).message || `Export job fetch failed (${response.status})`);
+    }
+    return response.json();
+  }
+
+  /**
+   * GET /exports/:id/download
+   * Download the CSV for a completed export job
+   * Returns a blob for direct download without buffering in memory
+   */
+  static async downloadJob(id: string): Promise<Blob> {
+    const response = await fetch(`${this.BASE_URL}/exports/${id}/download`, {
+      headers: this.getAuthHeaders(),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error((err as any).message || `Export download failed (${response.status})`);
+    }
+    return response.blob();
   }
 }
