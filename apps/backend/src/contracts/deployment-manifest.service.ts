@@ -31,7 +31,8 @@ export class DeploymentManifestService implements OnModuleInit {
     @Optional()
     @InjectRepository(ContractDeploymentManifest)
     private readonly manifestRepo:
-      Repository<ContractDeploymentManifest> | undefined,
+      | Repository<ContractDeploymentManifest>
+      | undefined,
     private readonly configService: ConfigService,
     private readonly contractCapabilityService: ContractCapabilityService,
   ) {}

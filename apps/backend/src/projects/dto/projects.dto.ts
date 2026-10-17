@@ -36,7 +36,11 @@ export class ProjectListQueryDto extends PaginatedQueryDto {
   @IsString()
   sortBy?: string = 'createdAt';
 
-  @ApiPropertyOptional({ description: 'Sort direction', default: 'DESC' })
+  @ApiPropertyOptional({
+    description: 'Sort direction',
+    default: 'DESC',
+    enum: ['ASC', 'DESC'],
+  })
   @IsOptional()
   @IsString()
   sortOrder?: 'ASC' | 'DESC' = 'DESC';

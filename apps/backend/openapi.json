@@ -1082,6 +1082,24 @@
               }
             }
           },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -1301,6 +1319,24 @@
         "responses": {
           "200": {
             "description": "Test suite ran successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SentimentTestResultDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -2395,6 +2431,24 @@
         "responses": {
           "200": {
             "description": "Round finalized successfully",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoundDto"
+                }
+              }
+            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -4204,7 +4258,7 @@
         "parameters": [
           {
             "name": "page",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -4212,7 +4266,7 @@
           },
           {
             "name": "limit",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -8275,7 +8329,7 @@
         },
         "responses": {
           "200": {
-            "description": "2FA required\n\nLogin successful",
+            "description": "Login successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -9433,7 +9487,7 @@
             "in": "query",
             "description": "Stellar public key (starts with G)",
             "schema": {
-              "pattern": "^G[A-Z0-9]{55}$",
+              "pattern": "/^G[A-Z0-9]{55}$/",
               "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM",
               "type": "string"
             }
@@ -11558,7 +11612,7 @@
         "parameters": [
           {
             "name": "format",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -13286,6 +13340,24 @@
               }
             }
           },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PortfolioAnomalyResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -13573,7 +13645,7 @@
           },
           {
             "name": "limit",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "number"
@@ -18425,7 +18497,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Returns a healthy or degraded response when the API is available.\n\nThe Health Check is successful",
+            "description": "The Health Check is successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -18543,7 +18615,7 @@
             }
           },
           "503": {
-            "description": "Returns when a critical dependency is unavailable.\n\nThe Health Check is not successful",
+            "description": "The Health Check is not successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -19906,6 +19978,24 @@
               }
             }
           },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoteResultDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Invalid project or voter key",
             "content": {
@@ -20032,6 +20122,24 @@
         "responses": {
           "200": {
             "description": "Verification status overridden successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectVerificationDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -27020,6 +27128,24 @@
               }
             }
           },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeatureFlag"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -27173,7 +27299,7 @@
           },
           {
             "name": "principalId",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -28273,6 +28399,24 @@
               }
             }
           },
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ContributionResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -29177,13 +29321,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "createdAt",
-              "type": "string",
-              "enum": [
-                "createdAt",
-                "ledgerSequence",
-                "processedAt"
-              ]
+              "$ref": "#/components/schemas/Object"
             }
           },
           {
@@ -29191,12 +29329,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "DESC",
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
+              "$ref": "#/components/schemas/Object"
             }
           }
         ],
@@ -29687,13 +29820,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "createdAt",
-              "type": "string",
-              "enum": [
-                "createdAt",
-                "updatedAt",
-                "failureCount"
-              ]
+              "$ref": "#/components/schemas/Object"
             }
           },
           {
@@ -29701,12 +29828,7 @@
             "required": false,
             "in": "query",
             "schema": {
-              "default": "DESC",
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
+              "$ref": "#/components/schemas/Object"
             }
           }
         ],
@@ -30503,8 +30625,7 @@
             "description": "Secret token for authenticating ingest requests (configured via SOROBAN_INGEST_SECRET environment variable)",
             "required": true,
             "schema": {
-              "type": "string",
-              "example": "your-secret-ingest-token-here"
+              "type": "string"
             }
           },
           {
@@ -36842,6 +36963,24 @@
           }
         },
         "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RebuildTriggerResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "202": {
             "description": "Rebuild job started",
             "content": {
@@ -37158,7 +37297,7 @@
         "parameters": [
           {
             "name": "dataset",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -37166,7 +37305,7 @@
           },
           {
             "name": "status",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -37174,7 +37313,7 @@
           },
           {
             "name": "limit",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -37504,7 +37643,7 @@
         "parameters": [
           {
             "name": "olderThanDays",
-            "required": false,
+            "required": true,
             "in": "query",
             "schema": {
               "type": "string"
@@ -40192,12 +40331,7 @@
             "in": "query",
             "description": "Sort direction",
             "schema": {
-              "default": "DESC",
-              "type": "string",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
+              "$ref": "#/components/schemas/Object"
             }
           }
         ],
@@ -40851,7 +40985,6 @@
           "sentimentTests": {
             "description": "Results of sentiment tests",
             "nullable": true,
-            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/SentimentTestResultDto"
@@ -41798,7 +41931,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Additional metadata about the decision",
             "example": {
               "priority": "high",
@@ -41883,9 +42015,9 @@
           },
           "details": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true,
-            "description": "Type-specific fields (request metadata, tx hash, ...)"
+            "description": "Type-specific fields (request metadata, tx hash, ...)",
+            "additionalProperties": true
           },
           "createdAt": {
             "type": "string",
@@ -42063,7 +42195,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "^G[A-Z0-9]{55}$",
+            "pattern": "/^G[A-Z0-9]{55}$/",
             "description": "Stellar public key (starts with G)",
             "example": "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHF"
           },
@@ -42252,7 +42384,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "^G[A-Z0-9]{55}$",
+            "pattern": "/^G[A-Z0-9]{55}$/",
             "description": "Stellar public key",
             "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM"
           },
@@ -42357,7 +42489,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "^\\d{6}$",
+            "pattern": "/^\\d{6}$/",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -42381,7 +42513,7 @@
           },
           "token": {
             "type": "string",
-            "pattern": "^\\d{6}$",
+            "pattern": "/^\\d{6}$/",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -42397,7 +42529,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "^\\d{6}$",
+            "pattern": "/^\\d{6}$/",
             "description": "TOTP code to disable 2FA",
             "example": "123456"
           }
@@ -42466,11 +42598,11 @@
             "type": "string"
           },
           "action": {
+            "type": "string",
             "enum": [
               "create",
               "update"
-            ],
-            "type": "string"
+            ]
           },
           "previousVersion": {
             "type": "number"
@@ -42511,7 +42643,6 @@
         "properties": {
           "variables": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Variable values for preview. When omitted, the template sampleVariables are used.",
             "example": {
               "symbol": "XLM",
@@ -42577,9 +42708,6 @@
           },
           "sampleVariables": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
             "description": "Default sample data used by the preview endpoint"
           }
         }
@@ -42807,14 +42935,7 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "enum": [
-              "failed",
-              "running",
-              "completed",
-              "queued",
-              "completed_with_errors"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Current status of the batch job",
             "example": "queued"
           },
@@ -42858,14 +42979,7 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "enum": [
-              "failed",
-              "running",
-              "completed",
-              "queued",
-              "completed_with_errors"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Current status of the snapshot batch job",
             "example": "running"
           },
@@ -42890,12 +43004,7 @@
             "example": 48
           },
           "triggeredBy": {
-            "enum": [
-              "unknown",
-              "manual",
-              "cron"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Trigger source",
             "example": "manual"
           },
@@ -42935,13 +43044,13 @@
         "type": "object",
         "properties": {
           "window": {
+            "type": "string",
+            "description": "The time window identifier",
             "enum": [
               "24h",
               "7d",
               "30d"
             ],
-            "type": "string",
-            "description": "The time window identifier",
             "example": "24h"
           },
           "hasData": {
@@ -43772,12 +43881,12 @@
         "type": "object",
         "properties": {
           "network": {
+            "type": "string",
+            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "enum": [
               "testnet",
               "mainnet"
             ],
-            "type": "string",
-            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "example": "testnet"
           },
           "horizonUrl": {
@@ -44076,6 +44185,7 @@
           },
           "eventPreferences": {
             "type": "object",
+            "description": "Event category preferences",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -44095,8 +44205,7 @@
                   }
                 }
               }
-            },
-            "description": "Event category preferences"
+            }
           },
           "quietHours": {
             "description": "Quiet hours configuration",
@@ -44158,7 +44267,6 @@
           },
           "quietHours": {
             "nullable": true,
-            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/QuietHoursConfigDto"
@@ -44218,7 +44326,6 @@
           },
           "eventPreferences": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Event category preferences"
           },
           "quietHours": {
@@ -44307,7 +44414,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Metadata context for the event (e.g., projectId, symbol, poolId)"
           }
         },
@@ -44366,8 +44472,8 @@
           },
           "suppressionBreakdown": {
             "type": "object",
-            "additionalProperties": true,
-            "description": "Breakdown of suppression reasons"
+            "description": "Breakdown of suppression reasons",
+            "additionalProperties": true
           },
           "notificationIds": {
             "description": "IDs of created notifications",
@@ -44407,8 +44513,8 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
-            "nullable": true
+            "nullable": true,
+            "additionalProperties": true
           },
           "createdAt": {
             "format": "date-time",
@@ -44495,7 +44601,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Metadata context for the alert (drift findings, run id, ...)"
           },
           "targetUserIds": {
@@ -45090,7 +45195,6 @@
           },
           "reviewer": {
             "nullable": true,
-            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/User"
@@ -45347,7 +45451,6 @@
           },
           "payload": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Serialised event payload"
           },
           "correlationId": {
@@ -45960,7 +46063,6 @@
           "article": {
             "nullable": true,
             "description": "Article details",
-            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/NewsArticleDto"
@@ -46084,11 +46186,11 @@
         "type": "object",
         "properties": {
           "kind": {
+            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
-            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -46167,11 +46269,11 @@
         "type": "object",
         "properties": {
           "kind": {
+            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
-            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -46260,7 +46362,6 @@
           },
           "conditions": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Optional conditions",
             "example": {
               "roles": [
@@ -46293,11 +46394,7 @@
             "example": "new-onboarding-flow"
           },
           "action": {
-            "enum": [
-              "remove",
-              "upsert"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Action performed: 'upsert' | 'remove'",
             "example": "upsert"
           },
@@ -46315,7 +46412,6 @@
           },
           "previousTargeting": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) before this mutation; null if the flag did not exist",
             "example": {
@@ -46326,7 +46422,6 @@
           },
           "newTargeting": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) after this mutation; null for removals",
             "example": {
@@ -46476,7 +46571,6 @@
           },
           "conditions": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Optional conditions (e.g. user roles, specific user IDs)",
             "example": {
               "roles": [
@@ -46493,6 +46587,69 @@
         "required": [
           "key",
           "enabled"
+        ]
+      },
+      "FeatureFlag": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "enabled": {
+            "type": "boolean"
+          },
+          "rolloutPercentage": {
+            "type": "number",
+            "nullable": true,
+            "description": "Percentage of principals (0-100) the flag targets, or null for no rollout.\n\nWhen set, this value alone determines the evaluation result — `enabled` is\nnot consulted — so a rollout can serve a fraction of users and later be\nwidened. 0 is a real value meaning \"serve nobody\", which makes it the\nsingle-field kill switch. Null leaves the flag on plain on/off."
+          },
+          "allowList": {
+            "nullable": true,
+            "description": "Principal IDs always granted the flag, regardless of the rollout percentage.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "denyList": {
+            "nullable": true,
+            "description": "Principal IDs always denied the flag; takes precedence over `allowList`.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "conditions": {
+            "type": "object",
+            "nullable": true
+          },
+          "changedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "key",
+          "enabled",
+          "rolloutPercentage",
+          "allowList",
+          "denyList",
+          "conditions",
+          "changedBy",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "RoadmapItemDto": {
@@ -46754,12 +46911,7 @@
             "example": "a1b2c3d4..."
           },
           "status": {
-            "enum": [
-              "PENDING",
-              "SUCCESS",
-              "FAILED"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Status of the contribution on ledger",
             "example": "SUCCESS"
           },
@@ -46873,12 +47025,7 @@
             "type": "number"
           },
           "status": {
-            "type": "string",
-            "enum": [
-              "success",
-              "failed",
-              "partial"
-            ]
+            "type": "object"
           },
           "error": {
             "type": "string"
@@ -46892,6 +47039,10 @@
           "eventsProcessed",
           "status"
         ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
       },
       "VaultSyncStatsDto": {
         "type": "object",
@@ -47004,10 +47155,7 @@
             "type": "string"
           },
           "byVault": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number"
-            }
+            "type": "object"
           }
         },
         "required": [
@@ -47050,8 +47198,7 @@
             "type": "number"
           },
           "rawPayload": {
-            "type": "object",
-            "additionalProperties": true
+            "type": "object"
           },
           "failureCount": {
             "type": "number"
@@ -47199,7 +47346,6 @@
           },
           "rawPayload": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Raw event payload as emitted by the Soroban contract (event data)",
             "example": {
               "from": "GBUQWP3BOUZX34ULNQG23RQ6F4BWFIREXOWJ2GY2FOLGABIDESX56JP2",
@@ -47245,13 +47391,13 @@
             "example": "transfer"
           },
           "status": {
+            "type": "string",
+            "description": "Current processing status of the event",
             "enum": [
               "PENDING",
               "PROCESSED",
               "FAILED"
             ],
-            "type": "string",
-            "description": "Current processing status of the event",
             "example": "PENDING"
           },
           "createdAt": {
@@ -47708,6 +47854,7 @@
           },
           "githubHandle": {
             "type": "string",
+            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           }
@@ -47746,6 +47893,7 @@
           },
           "githubHandle": {
             "type": "string",
+            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           },
@@ -48047,7 +48195,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true
           }
         },
@@ -48544,7 +48691,6 @@
           },
           "contracts": {
             "type": "object",
-            "additionalProperties": true,
             "example": {
               "contributor_registry": {
                 "id": "CCOVDGHF3XQ5RAFY6DJ36G6CHQJF54QCOBZXCC3LBMKNEWQJLDGXQJSB"
@@ -48553,7 +48699,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true
           },
           "isActive": {
@@ -48630,7 +48775,6 @@
           },
           "contracts": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Contract deployment records keyed by contract name",
             "example": {
               "contributor_registry": {
@@ -48641,7 +48785,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Environment metadata (RPC URL, admin addresses, deployment notes)",
             "example": {
               "rpc_url": "https://soroban-testnet.stellar.org:443"
@@ -48673,12 +48816,10 @@
           },
           "contracts": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Contract deployment records"
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Environment metadata"
           },
           "isActive": {
@@ -48815,7 +48956,6 @@
           },
           "seededData": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Summary of currently seeded data"
           }
         },
@@ -48866,7 +49006,6 @@
           },
           "details": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Details about seeded entities"
           }
         },
@@ -48901,20 +49040,12 @@
             "description": "Run identifier — pass this to the teardown endpoint"
           },
           "kind": {
-            "enum": [
-              "demo_seed",
-              "testnet_account"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "What produced the run",
             "example": "demo_seed"
           },
           "status": {
-            "enum": [
-              "active",
-              "torn_down"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Run status",
             "example": "active"
           },
@@ -48982,12 +49113,7 @@
         "type": "object",
         "properties": {
           "type": {
-            "enum": [
-              "testnet_account",
-              "demo_contributor",
-              "demo_grant_round"
-            ],
-            "type": "string",
+            "type": "object",
             "description": "Resource type",
             "example": "demo_contributor"
           },
@@ -49002,14 +49128,14 @@
             "example": "Demo contributor demo-alice"
           },
           "action": {
+            "type": "string",
+            "description": "What happened, or would happen in a dry run",
             "enum": [
               "removed",
               "would_remove",
               "not_found",
               "skipped"
             ],
-            "type": "string",
-            "description": "What happened, or would happen in a dry run",
             "example": "removed"
           },
           "reason": {
@@ -49145,7 +49271,6 @@
           },
           "metadata": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Additional metadata for profile or moderation UIs"
           }
         },
@@ -49323,7 +49448,6 @@
           },
           "progressDetails": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -49437,7 +49561,6 @@
           },
           "progressDetails": {
             "type": "object",
-            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -49697,12 +49820,12 @@
           },
           "filters": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            }
+            },
+            "additionalProperties": true
           },
           "isSubscribed": {
             "type": "boolean",
@@ -49809,12 +49932,12 @@
           },
           "filters": {
             "type": "object",
-            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            }
+            },
+            "additionalProperties": true
           },
           "isSubscribed": {
             "type": "boolean",
@@ -49892,9 +50015,6 @@
           },
           "socialLinks": {
             "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
             "description": "Social media links"
           }
         },
