@@ -46,10 +46,16 @@ export function resolvePagination(
  * typed `items` array in the OpenAPI contract.
  */
 export abstract class PaginatedResponseDto<T> {
-  @ApiProperty({ description: 'List of items for the current page', type: 'array' })
+  @ApiProperty({
+    description: 'List of items for the current page',
+    type: 'array',
+  })
   items: T[];
 
-  @ApiProperty({ description: 'Total number of items matching the query', example: 42 })
+  @ApiProperty({
+    description: 'Total number of items matching the query',
+    example: 42,
+  })
   total: number;
 
   @ApiProperty({ description: 'Current page number (1-indexed)', example: 1 })
@@ -64,7 +70,11 @@ export abstract class PaginatedResponseDto<T> {
   @ApiProperty({ description: 'Total number of pages', example: 3 })
   totalPages: number;
 
-  protected constructor(items: T[], pagination: ResolvedPagination, total: number) {
+  protected constructor(
+    items: T[],
+    pagination: ResolvedPagination,
+    total: number,
+  ) {
     this.items = items;
     this.total = total;
     this.page = pagination.page;
@@ -83,7 +93,8 @@ export abstract class PaginatedResponseDto<T> {
  * ```
  */
 export function paginatedResponse<T>(
-  ItemDto: new () => T,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _ItemDto: new () => T,
 ): new (
   items: T[],
   pagination: ResolvedPagination,

@@ -136,8 +136,8 @@ export class SavedSearchNotificationScheduler {
 
     if (!since) return response.total;
 
-    // ProjectListResponseDto uses `projects`, typed as ProjectListItemDto[].
-    return response.projects.filter((p: ProjectListItemDto) => {
+    // ProjectListResponseDto uses `items`, typed as ProjectListItemDto[].
+    return response.items.filter((p: ProjectListItemDto) => {
       return new Date(p.createdAt).getTime() > since.getTime();
     }).length;
   }

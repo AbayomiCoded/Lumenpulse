@@ -6,9 +6,12 @@ import {
   Min,
   IsArray,
 } from 'class-validator';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { PaginatedQueryDto } from '../../common/pagination/pagination-query.dto';
-import { PaginatedResponseDto } from '../../common/pagination/pagination-response.dto';
+import {
+  PaginatedResponseDto,
+  ResolvedPagination,
+} from '../../common/pagination/pagination-response.dto';
 
 export class CreateRoundDto {
   @ApiProperty({
@@ -424,4 +427,12 @@ export class RoundListQueryDto extends PaginatedQueryDto {}
 /**
  * Paginated response for `GET /grants/rounds`.
  */
-export class RoundListResponseDto extends PaginatedResponseDto<RoundDto> {}
+export class RoundListResponseDto extends PaginatedResponseDto<RoundDto> {
+  constructor(
+    items: RoundDto[],
+    pagination: ResolvedPagination,
+    total: number,
+  ) {
+    super(items, pagination, total);
+  }
+}
