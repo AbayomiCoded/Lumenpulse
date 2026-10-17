@@ -29250,6 +29250,33 @@
         "operationId": "CrowdfundSyncController_listEvents",
         "parameters": [
           {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "ledgerSequence",
+                "processedAt"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
             "name": "vaultAddress",
             "required": false,
             "in": "query",
@@ -29314,22 +29341,6 @@
               "maximum": 100,
               "default": 20,
               "type": "number"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Object"
-            }
-          },
-          {
-            "name": "sortOrder",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Object"
             }
           }
         ],
@@ -29758,6 +29769,33 @@
         "operationId": "CrowdfundSyncController_listDeadLetters",
         "parameters": [
           {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "failureCount",
+                "updatedAt"
+              ]
+            }
+          },
+          {
+            "name": "sortOrder",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          },
+          {
             "name": "vaultAddress",
             "required": false,
             "in": "query",
@@ -29813,22 +29851,6 @@
               "maximum": 100,
               "default": 20,
               "type": "number"
-            }
-          },
-          {
-            "name": "sortBy",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Object"
-            }
-          },
-          {
-            "name": "sortOrder",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "$ref": "#/components/schemas/Object"
             }
           }
         ],
@@ -40331,7 +40353,12 @@
             "in": "query",
             "description": "Sort direction",
             "schema": {
-              "$ref": "#/components/schemas/Object"
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
             }
           }
         ],
@@ -47039,10 +47066,6 @@
           "eventsProcessed",
           "status"
         ]
-      },
-      "Object": {
-        "type": "object",
-        "properties": {}
       },
       "VaultSyncStatsDto": {
         "type": "object",
