@@ -192,6 +192,37 @@
               }
             }
           },
+          "201": {
+            "description": "Data submitted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Data submitted successfully"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "receivedData": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
           "409": {
             "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
             "content": {
@@ -2558,6 +2589,55 @@
         "responses": {
           "200": {
             "description": "Matching pool funded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "roundId": {
+                      "type": "integer"
+                    },
+                    "newBalance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roundId",
+                    "newBalance"
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Matching pool funded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "roundId": {
+                      "type": "integer"
+                    },
+                    "newBalance": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "roundId",
+                    "newBalance"
+                  ]
+                }
+              }
+            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -2752,6 +2832,47 @@
         "responses": {
           "200": {
             "description": "Project approved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Project approved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -3146,6 +3267,47 @@
         "responses": {
           "200": {
             "description": "Contribution recorded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Contribution recorded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "success"
+                  ]
+                }
+              }
+            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -3281,6 +3443,93 @@
         "responses": {
           "200": {
             "description": "Distribution completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalDistributed": {
+                      "type": "string"
+                    },
+                    "allocations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "projectId": {
+                            "type": "integer"
+                          },
+                          "owner": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "projectId",
+                          "owner",
+                          "amount"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "totalDistributed",
+                    "allocations"
+                  ]
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Distribution completed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalDistributed": {
+                      "type": "string"
+                    },
+                    "allocations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "projectId": {
+                            "type": "integer"
+                          },
+                          "owner": {
+                            "type": "string"
+                          },
+                          "amount": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "projectId",
+                          "owner",
+                          "amount"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "totalDistributed",
+                    "allocations"
+                  ]
+                }
+              }
+            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -9316,6 +9565,37 @@
                       "type": "boolean"
                     },
                     "token": {
+                      "type": "string"
+                    },
+                    "user": {
+                      "type": "object"
+                    }
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "token": {
+                      "type": "string"
+                    },
+                    "refresh_token": {
                       "type": "string"
                     },
                     "user": {
@@ -38789,7 +39069,88 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "type": "object",
+                  "properties": {
+                    "generatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "cacheTtlMs": {
+                      "type": "number"
+                    },
+                    "portfolio": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "nullable": true,
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    },
+                    "watchlist": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "nullable": true,
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    },
+                    "signals": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "nullable": true,
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    },
+                    "news": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "object",
+                          "nullable": true
+                        },
+                        "error": {
+                          "type": "string",
+                          "nullable": true,
+                          "enum": [
+                            "unavailable"
+                          ]
+                        }
+                      }
+                    }
+                  },
+                  "required": [
+                    "generatedAt",
+                    "cacheTtlMs",
+                    "portfolio",
+                    "watchlist",
+                    "signals",
+                    "news"
+                  ]
                 }
               }
             },
@@ -40515,7 +40876,12 @@
       },
       "ForceRefreshDto": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "requestedBy": {
+            "type": "string",
+            "description": "Optional identifier for audit logs."
+          }
+        }
       },
       "RoundListResponseDto": {
         "type": "object",
