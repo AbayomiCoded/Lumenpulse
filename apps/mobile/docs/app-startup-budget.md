@@ -14,7 +14,7 @@ CI: `mobile-startup` job in `.github/workflows/mobile.yml`.
 | --- | --- |
 | `coldStartMs` | First load: `navigation.domContentLoadedEventEnd` on `/` (empty cache). |
 | `warmStartMs` | Immediate `reload()` on the same tab (warm cache). |
-| `timeToInteractiveMs` | Wall time until `testID="app-interactive"` is visible **and** the app marks `timeToInteractive` after `InteractionManager.runAfterInteractions`. |
+| `timeToInteractiveMs` | Navigation start → app `timeToInteractive` mark (after `InteractionManager.runAfterInteractions`). The 0×0 `app-interactive` test id is a sentinel only; E2E waits on `__LUMENPULSE_STARTUP__`, not visibility. |
 
 Measurements run against the **Expo web** build (same as the smoke E2E suite) under:
 
@@ -27,7 +27,9 @@ needed.
 
 ## Baseline (recorded)
 
-See `mobile-startup-baseline.json`. Refresh after intentional startup work:
+See `mobile-startup-baseline.json`. Initial ceilings were calibrated for **GitHub Actions**
+(Expo web + 4× CPU throttle), which is slower than a local dev machine. Refresh after
+intentional startup work:
 
 ```sh
 cd apps/mobile

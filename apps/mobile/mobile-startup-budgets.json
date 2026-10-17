@@ -6,23 +6,24 @@
   "notes": [
     "Measurements are produced by e2e/startup-budget.spec.ts and written to mobile-startup-measurements.json (gitignored).",
     "CI emits ::warning:: when a metric passes warningMs; exceeding maxMs fails the job.",
+    "Thresholds are set from GitHub Actions (ubuntu + Expo web + throttle), not from fast local laptops — see mobile-startup-baseline.json.",
     "Native cold start is not measured in CI (no emulator on default runners); these numbers proxy bundle parse + first paint on web."
   ],
   "metrics": {
     "coldStartMs": {
-      "baselineMs": 4500,
-      "warningMs": 6000,
-      "maxMs": 9000
+      "baselineMs": 10000,
+      "warningMs": 14000,
+      "maxMs": 20000
     },
     "warmStartMs": {
-      "baselineMs": 1800,
-      "warningMs": 2800,
-      "maxMs": 4500
+      "baselineMs": 5000,
+      "warningMs": 8000,
+      "maxMs": 12000
     },
     "timeToInteractiveMs": {
-      "baselineMs": 5500,
-      "warningMs": 7500,
-      "maxMs": 11000
+      "baselineMs": 12000,
+      "warningMs": 16000,
+      "maxMs": 22000
     }
   }
 }

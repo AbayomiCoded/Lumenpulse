@@ -47,13 +47,24 @@ async function waitForAppInteractive(page: Page): Promise<void> {
 async function timeToInteractiveMs(page: Page): Promise<number> {
   await waitForAppInteractive(page);
   return page.evaluate(() => {
-    const boot = (globalThis as { __LUMENPULSE_STARTUP__?: { timeToInteractiveMs: number | null } })
-      .__LUMENPULSE_STARTUP__;
-    if (boot?.timeToInteractiveMs != null) {
-      return Math.round(boot.timeToInteractiveMs);
-    }
     const nav = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
-    return nav ? Math.round(nav.loadEventEnd - nav.startTime) : Math.round(performance.now());
+    const boot = (
+      globalThis as {
+        __LUMENPULSE_STARTUP__?: {
+          timeToInteractiveMs: number | null;
+          phases?: { timeToInteractive?: number };
+        };
+      }
+    ).__LUMENPULSE_STARTUP__;
+    const ttiWall = boot?.phases?.timeToInteractive;
+    if (nav && ttiWall != null) {
+      const navigationStartWall = performance.timeOrigin + nav.startTime;
+      return Math.round(ttiWall - navigationStartWall);
+    }
+    if (nav && nav.domContentLoadedEventEnd > 0) {
+      return Math.round(nav.domContentLoadedEventEnd - nav.startTime);
+    }
+    return boot?.timeToInteractiveMs ?? Math.round(performance.now());
   });
 }
 
