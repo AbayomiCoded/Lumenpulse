@@ -8,6 +8,7 @@ on:
       - 'apps/backend/**'
       - 'apps/webapp/generated/**'
       - 'apps/webapp/scripts/generate-api-types.mjs'
+      - 'scripts/audit-dependencies.mjs'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -15,6 +16,7 @@ on:
       - 'apps/backend/.ci-trigger'
       - 'apps/webapp/generated/**'
       - 'apps/webapp/scripts/generate-api-types.mjs'
+      - 'scripts/audit-dependencies.mjs'
 
 # Issue #1713. One group per workflow+ref, so a second push to the same PR
 # cancels the now-obsolete run instead of paying for both. `main` is excluded
@@ -33,18 +35,18 @@ jobs:
         working-directory: ./apps/backend
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Start timeout guard
       uses: ./.github/actions/job-timeout-guard
       with:
         phase: start
         job-id: backend-checks
         budget-minutes: '10'
-        note: npm ci + lint + type-check + jest + nest build + SBOM. Observed p90 1.8 min; cold-cache variance dominates.
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+        note: npm ci + audit + lint + type-check + jest + nest build + SBOM. Observed p90 1.8 min; cold-cache variance dominates.
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -55,6 +57,9 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
+
+    - name: Scan dependencies for vulnerabilities
+      run: npm run audit:ci
 
     - name: Lint
       run: npm run lint
@@ -126,6 +131,11 @@ jobs:
           --health-retries 5
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
     - name: Start timeout guard
       uses: ./.github/actions/job-timeout-guard
       with:
@@ -133,11 +143,6 @@ jobs:
         job-id: migration-safety
         budget-minutes: '10'
         note: Postgres service + npm ci + static migration check + full up/drift/down verification.
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -218,6 +223,9 @@ jobs:
           --health-retries 5
 
     steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
     - name: Start timeout guard
       uses: ./.github/actions/job-timeout-guard
       with:
@@ -225,9 +233,6 @@ jobs:
         job-id: db-e2e
         budget-minutes: '20'
         note: Provisions Postgres+Redis, migrates a clean database, runs the serial DB-backed e2e suite.
-
-    - name: Checkout repository
-      uses: actions/checkout@v4
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
