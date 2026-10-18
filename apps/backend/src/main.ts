@@ -14,8 +14,11 @@ async function bootstrap() {
   // Enable graceful shutdown hooks
   app.enableShutdownHooks();
 
-  // URI versioning: /v1/config/stellar, /v2/... etc.
-  app.enableVersioning({ type: VersioningType.URI });
+  // URI versioning: /v1/..., /v2/... etc. Defaults to '1' for all controllers.
+  app.enableVersioning({
+    type: VersioningType.URI,
+    defaultVersion: '1',
+  });
 
   // Same builder as `scripts/generate-openapi.ts`, so the served spec and the
   // committed openapi.json artifact never diverge.

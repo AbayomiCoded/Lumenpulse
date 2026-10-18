@@ -32,6 +32,7 @@ import databaseConfig from './database/database.config';
 import stellarConfig from './stellar/config/stellar.config';
 import { LoggerMiddleware } from './common/middleware/logger.middleware';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
+import { VersionFallbackMiddleware } from './common/middleware/version-fallback.middleware';
 import { RequestContextModule } from './common/services/request-context.module';
 import { StructuredLoggerService } from './common/services/structured-logger.service';
 import { RateLimitGuard } from './common/rate-limit/rate-limit.guard';
@@ -263,8 +264,10 @@ import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    // Apply request ID and logging middleware to all routes
-    consumer.apply(RequestIdMiddleware, LoggerMiddleware).forRoutes('*');
+    // Apply version fallback, request ID and logging middleware to all routes
+    consumer
+      .apply(VersionFallbackMiddleware, RequestIdMiddleware, LoggerMiddleware)
+      .forRoutes('*');
 
     // Apply query-count profiling middleware when QUERY_PROFILING=true.
     // Off by default — zero overhead in production.
