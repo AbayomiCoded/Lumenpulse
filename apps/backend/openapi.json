@@ -1082,24 +1082,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -1319,24 +1301,6 @@
         "responses": {
           "200": {
             "description": "Test suite ran successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SentimentTestResultDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -2431,24 +2395,6 @@
         "responses": {
           "200": {
             "description": "Round finalized successfully",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RoundDto"
-                }
-              }
-            },
             "headers": {
               "X-Request-Id": {
                 "description": "Correlation id for this request",
@@ -4258,7 +4204,7 @@
         "parameters": [
           {
             "name": "page",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -4266,7 +4212,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -8329,7 +8275,7 @@
         },
         "responses": {
           "200": {
-            "description": "Login successful",
+            "description": "2FA required\n\nLogin successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -9487,7 +9433,7 @@
             "in": "query",
             "description": "Stellar public key (starts with G)",
             "schema": {
-              "pattern": "/^G[A-Z0-9]{55}$/",
+              "pattern": "^G[A-Z0-9]{55}$",
               "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM",
               "type": "string"
             }
@@ -11810,7 +11756,7 @@
         "parameters": [
           {
             "name": "format",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -13538,24 +13484,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PortfolioAnomalyResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -13843,7 +13771,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "number"
@@ -16726,6 +16654,2249 @@
         ]
       }
     },
+    "/webhooks/subscriptions": {
+      "post": {
+        "description": "Partners can register endpoints and subscribe to event types (e.g. pool.round_finalized, milestone.approved). A unique per-subscriber signing secret is generated and returned in the response.",
+        "operationId": "WebhookSubscriptionController_createSubscription",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateWebhookSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook subscription created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSubscriptionResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid subscription payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Register a new partner webhook subscription",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      },
+      "get": {
+        "description": "Returns paginated list of webhook subscriptions with optional filtering.",
+        "operationId": "WebhookSubscriptionController_listSubscriptions",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by subscription status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACTIVE",
+                "INACTIVE"
+              ]
+            }
+          },
+          {
+            "name": "eventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by subscribed event type or prefix",
+            "schema": {
+              "example": "pool.round_finalized",
+              "type": "string"
+            }
+          },
+          {
+            "name": "partnerId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by partner ID",
+            "schema": {
+              "example": "partner-123",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WebhookSubscriptionResponseDto"
+                  }
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "List all partner webhook subscriptions",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      }
+    },
+    "/webhooks/subscriptions/{id}": {
+      "get": {
+        "description": "Returns configuration and secret metadata for a specific subscription.",
+        "operationId": "WebhookSubscriptionController_getSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subscription details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSubscriptionResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get details of a webhook subscription",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      },
+      "patch": {
+        "description": "Updates target URL, subscribed event types, or active status.",
+        "operationId": "WebhookSubscriptionController_updateSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateWebhookSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Subscription updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSubscriptionResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Update a webhook subscription",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      },
+      "delete": {
+        "description": "Removes the webhook subscription and stops deliveries.",
+        "operationId": "WebhookSubscriptionController_deleteSubscription",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Subscription deleted successfully",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Delete a webhook subscription",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      }
+    },
+    "/webhooks/subscriptions/{id}/rotate-secret": {
+      "post": {
+        "description": "Implements Wave 9 rotation mechanism: generates a new secret version while retaining the previous secret during the configured overlap window (default: 24h). During the overlap window, outbound deliveries include both the new and previous signature headers.",
+        "operationId": "WebhookSubscriptionController_rotateSecret",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RotateWebhookSecretDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Secret rotated successfully with overlap window details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookSecretRotationResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid rotation parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Rotate subscriber signing secret using Wave 9 mechanism",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      }
+    },
+    "/webhooks/subscriptions/{id}/deliveries": {
+      "get": {
+        "description": "Returns paginated delivery history per subscriber, with timestamps, delivery status, and signatures.",
+        "operationId": "WebhookSubscriptionController_getDeliveries",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by delivery status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "DELIVERED",
+                "FAILED",
+                "DEAD_LETTER"
+              ]
+            }
+          },
+          {
+            "name": "eventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event type",
+            "schema": {
+              "example": "pool.round_finalized",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated delivery history for the subscriber",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedWebhookDeliveriesDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Subscription not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Query delivery history for a subscriber",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      }
+    },
+    "/webhooks/subscriptions/{id}/deliveries/{deliveryId}": {
+      "get": {
+        "description": "Returns complete delivery attempt details including headers, response, and execution duration.",
+        "operationId": "WebhookSubscriptionController_getDelivery",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Subscription UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "deliveryId",
+            "required": true,
+            "in": "path",
+            "description": "Delivery UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Delivery details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeliveryResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Delivery not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Inspect a specific delivery record",
+        "tags": [
+          "webhook-subscriptions"
+        ]
+      }
+    },
+    "/webhooks/dead-letter": {
+      "get": {
+        "description": "Retrieve outbound webhook deliveries that have exhausted retry attempts and moved to the dead-letter queue.",
+        "operationId": "WebhookDeadLetterController_listDeadLetters",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 0,
+              "default": 0,
+              "example": 0,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Filter by dead-letter status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "replayed",
+                "resolved"
+              ]
+            }
+          },
+          {
+            "name": "subscriptionId",
+            "required": false,
+            "in": "query",
+            "description": "Filter by subscription ID",
+            "schema": {
+              "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+              "type": "string"
+            }
+          },
+          {
+            "name": "eventType",
+            "required": false,
+            "in": "query",
+            "description": "Filter by event type",
+            "schema": {
+              "example": "milestone.approved",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of dead-lettered webhook deliveries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedWebhookDeadLettersDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "List dead-lettered webhook deliveries",
+        "tags": [
+          "webhook-dead-letter"
+        ]
+      }
+    },
+    "/webhooks/dead-letter/{id}": {
+      "get": {
+        "description": "Inspect detailed error history, failure reasons, and payload for a dead-letter entry.",
+        "operationId": "WebhookDeadLetterController_inspectDeadLetter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dead-letter record UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dead-letter record details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeadLetterResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dead-letter record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Inspect a dead-lettered webhook delivery",
+        "tags": [
+          "webhook-dead-letter"
+        ]
+      }
+    },
+    "/webhooks/dead-letter/{id}/replay": {
+      "post": {
+        "description": "Re-attempts delivery to the subscriber endpoint immediately. If successful, updates status to replayed.",
+        "operationId": "WebhookDeadLetterController_replayDeadLetter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dead-letter record UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Dead-letter delivery replayed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeadLetterResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dead-letter record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Replay a dead-lettered webhook delivery",
+        "tags": [
+          "webhook-dead-letter"
+        ]
+      }
+    },
+    "/webhooks/dead-letter/{id}/resolve": {
+      "patch": {
+        "description": "Acknowledge and mark a dead-letter item as resolved without re-delivering.",
+        "operationId": "WebhookDeadLetterController_resolveDeadLetter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Dead-letter record UUID",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveWebhookDeadLetterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dead-letter item marked as resolved",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookDeadLetterResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Dead-letter record not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Mark a dead-lettered webhook delivery as resolved",
+        "tags": [
+          "webhook-dead-letter"
+        ]
+      }
+    },
     "/notification-preferences": {
       "post": {
         "description": "Creates or updates notification preferences for the authenticated user",
@@ -18689,6 +20860,502 @@
         ]
       }
     },
+    "/outbox/dead-letter": {
+      "get": {
+        "description": "Retrieve outbox events that have exhausted their dispatch attempts and been moved to the dead-letter queue.",
+        "operationId": "OutboxDeadLetterController_listDeadLetters",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number (zero-indexed)",
+            "schema": {
+              "example": 0,
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of results per page",
+            "schema": {
+              "example": 20,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated list of dead-lettered outbox events",
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "List dead-lettered outbox events",
+        "tags": [
+          "outbox/dead-letter"
+        ]
+      }
+    },
+    "/outbox/dead-letter/{id}": {
+      "get": {
+        "description": "Get the full details of a dead-lettered outbox event, including attempt count and last error.",
+        "operationId": "OutboxDeadLetterController_inspectDeadLetter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Outbox event ID",
+            "schema": {
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dead-lettered outbox event details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutboxEvent"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Inspect a dead-lettered outbox event",
+        "tags": [
+          "outbox/dead-letter"
+        ]
+      }
+    },
+    "/outbox/dead-letter/{id}/replay": {
+      "post": {
+        "description": "Reset a dead-lettered outbox event and dispatch it again immediately. If the replay exhausts the attempt limit, the event returns to the dead-letter queue.",
+        "operationId": "OutboxDeadLetterController_replayDeadLetter",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Outbox event ID",
+            "schema": {
+              "example": "550e8400-e29b-41d4-a716-446655440000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
+            "schema": {
+              "type": "string",
+              "maxLength": 255
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Event replayed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OutboxEvent"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Event is not in the dead-letter queue",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Authenticated but not permitted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Replay a dead-lettered outbox event",
+        "tags": [
+          "outbox/dead-letter"
+        ]
+      }
+    },
     "/admin/support/sessions": {
       "post": {
         "operationId": "SupportModeController_start",
@@ -18875,7 +21542,7 @@
         "parameters": [
           {
             "name": "subjectId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -18883,7 +21550,7 @@
           },
           {
             "name": "actorId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -18891,7 +21558,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -19378,7 +22045,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "The Health Check is successful",
+            "description": "Returns a healthy or degraded response when the API is available.\n\nThe Health Check is successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -19496,7 +22163,7 @@
             }
           },
           "503": {
-            "description": "The Health Check is not successful",
+            "description": "Returns when a critical dependency is unavailable.\n\nThe Health Check is not successful",
             "content": {
               "application/json": {
                 "schema": {
@@ -20859,24 +23526,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/VoteResultDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Invalid project or voter key",
             "content": {
@@ -21003,24 +23652,6 @@
         "responses": {
           "200": {
             "description": "Verification status overridden successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectVerificationDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -24851,502 +27482,6 @@
         ]
       }
     },
-    "/outbox/dead-letter": {
-      "get": {
-        "description": "Retrieve outbox events that have exhausted their dispatch attempts and been moved to the dead-letter queue.",
-        "operationId": "OutboxDeadLetterController_listDeadLetters",
-        "parameters": [
-          {
-            "name": "page",
-            "required": false,
-            "in": "query",
-            "description": "Page number (zero-indexed)",
-            "schema": {
-              "example": 0,
-              "type": "string"
-            }
-          },
-          {
-            "name": "limit",
-            "required": false,
-            "in": "query",
-            "description": "Number of results per page",
-            "schema": {
-              "example": 20,
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Paginated list of dead-lettered outbox events",
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Malformed request or validation failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authenticated but not permitted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT-auth": []
-          }
-        ],
-        "summary": "List dead-lettered outbox events",
-        "tags": [
-          "outbox/dead-letter"
-        ]
-      }
-    },
-    "/outbox/dead-letter/{id}": {
-      "get": {
-        "description": "Get the full details of a dead-lettered outbox event, including attempt count and last error.",
-        "operationId": "OutboxDeadLetterController_inspectDeadLetter",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "description": "Outbox event ID",
-            "schema": {
-              "example": "550e8400-e29b-41d4-a716-446655440000",
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Dead-lettered outbox event details",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OutboxEvent"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Malformed request or validation failure",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authenticated but not permitted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Event not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT-auth": []
-          }
-        ],
-        "summary": "Inspect a dead-lettered outbox event",
-        "tags": [
-          "outbox/dead-letter"
-        ]
-      }
-    },
-    "/outbox/dead-letter/{id}/replay": {
-      "post": {
-        "description": "Reset a dead-lettered outbox event and dispatch it again immediately. If the replay exhausts the attempt limit, the event returns to the dead-letter queue.",
-        "operationId": "OutboxDeadLetterController_replayDeadLetter",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "description": "Outbox event ID",
-            "schema": {
-              "example": "550e8400-e29b-41d4-a716-446655440000",
-              "type": "string"
-            }
-          },
-          {
-            "name": "Idempotency-Key",
-            "in": "header",
-            "required": false,
-            "description": "Client-generated unique key (UUID recommended). Retrying with the same key and body replays the original response instead of repeating the write.",
-            "schema": {
-              "type": "string",
-              "maxLength": 255
-            }
-          }
-        ],
-        "responses": {
-          "202": {
-            "description": "Event replayed",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/OutboxEvent"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Event is not in the dead-letter queue",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Missing or invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Authenticated but not permitted",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Event not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "A request with the same Idempotency-Key is still in progress, or the resource is in a conflicting state",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Idempotency-Key was reused with a different request body",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Unexpected server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT-auth": []
-          }
-        ],
-        "summary": "Replay a dead-lettered outbox event",
-        "tags": [
-          "outbox/dead-letter"
-        ]
-      }
-    },
     "/exports": {
       "post": {
         "operationId": "ExportController_createJob",
@@ -28009,24 +30144,6 @@
               }
             }
           },
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FeatureFlag"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "400": {
             "description": "Malformed request or validation failure",
             "content": {
@@ -28180,7 +30297,7 @@
           },
           {
             "name": "principalId",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -29264,24 +31381,6 @@
         "responses": {
           "200": {
             "description": "Contribution processed successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ContributionResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "201": {
-            "description": "",
             "content": {
               "application/json": {
                 "schema": {
@@ -31528,7 +33627,8 @@
             "description": "Secret token for authenticating ingest requests (configured via SOROBAN_INGEST_SECRET environment variable)",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "your-secret-ingest-token-here"
             }
           },
           {
@@ -37866,24 +39966,6 @@
           }
         },
         "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RebuildTriggerResponseDto"
-                }
-              }
-            },
-            "headers": {
-              "X-Request-Id": {
-                "description": "Correlation id for this request",
-                "schema": {
-                  "type": "string"
-                }
-              }
-            }
-          },
           "202": {
             "description": "Rebuild job started",
             "content": {
@@ -38200,7 +40282,7 @@
         "parameters": [
           {
             "name": "dataset",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -38208,7 +40290,7 @@
           },
           {
             "name": "status",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -38216,7 +40298,7 @@
           },
           {
             "name": "limit",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -38546,7 +40628,7 @@
         "parameters": [
           {
             "name": "olderThanDays",
-            "required": true,
+            "required": false,
             "in": "query",
             "schema": {
               "type": "string"
@@ -42666,6 +44748,7 @@
           "sentimentTests": {
             "description": "Results of sentiment tests",
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/SentimentTestResultDto"
@@ -43619,6 +45702,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Additional metadata about the decision",
             "example": {
               "priority": "high",
@@ -43703,9 +45787,9 @@
           },
           "details": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
-            "description": "Type-specific fields (request metadata, tx hash, ...)",
-            "additionalProperties": true
+            "description": "Type-specific fields (request metadata, tx hash, ...)"
           },
           "createdAt": {
             "type": "string",
@@ -43883,7 +45967,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "/^G[A-Z0-9]{55}$/",
+            "pattern": "^G[A-Z0-9]{55}$",
             "description": "Stellar public key (starts with G)",
             "example": "GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHHF"
           },
@@ -44072,7 +46156,7 @@
         "properties": {
           "publicKey": {
             "type": "string",
-            "pattern": "/^G[A-Z0-9]{55}$/",
+            "pattern": "^G[A-Z0-9]{55}$",
             "description": "Stellar public key",
             "example": "GCZJM35NKGVK47BB4SPBDV25477PZYIYPVVG453LPYFNXLS3FGHDXOCM"
           },
@@ -44189,7 +46273,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -44213,7 +46297,7 @@
           },
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code from authenticator app",
             "example": "123456"
           }
@@ -44229,7 +46313,7 @@
         "properties": {
           "token": {
             "type": "string",
-            "pattern": "/^\\d{6}$/",
+            "pattern": "^\\d{6}$",
             "description": "TOTP code to disable 2FA",
             "example": "123456"
           }
@@ -44315,11 +46399,11 @@
             "type": "string"
           },
           "action": {
-            "type": "string",
             "enum": [
               "create",
               "update"
-            ]
+            ],
+            "type": "string"
           },
           "previousVersion": {
             "type": "number"
@@ -44360,6 +46444,7 @@
         "properties": {
           "variables": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Variable values for preview. When omitted, the template sampleVariables are used.",
             "example": {
               "symbol": "XLM",
@@ -44425,6 +46510,9 @@
           },
           "sampleVariables": {
             "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Default sample data used by the preview endpoint"
           }
         }
@@ -44652,7 +46740,14 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "failed",
+              "running",
+              "completed",
+              "queued",
+              "completed_with_errors"
+            ],
+            "type": "string",
             "description": "Current status of the batch job",
             "example": "queued"
           },
@@ -44696,7 +46791,14 @@
             "example": "9b3b4a07-5b35-4f8c-9f26-8f3ac77e5b41"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "failed",
+              "running",
+              "completed",
+              "queued",
+              "completed_with_errors"
+            ],
+            "type": "string",
             "description": "Current status of the snapshot batch job",
             "example": "running"
           },
@@ -44721,7 +46823,12 @@
             "example": 48
           },
           "triggeredBy": {
-            "type": "object",
+            "enum": [
+              "unknown",
+              "manual",
+              "cron"
+            ],
+            "type": "string",
             "description": "Trigger source",
             "example": "manual"
           },
@@ -44761,13 +46868,13 @@
         "type": "object",
         "properties": {
           "window": {
-            "type": "string",
-            "description": "The time window identifier",
             "enum": [
               "24h",
               "7d",
               "30d"
             ],
+            "type": "string",
+            "description": "The time window identifier",
             "example": "24h"
           },
           "hasData": {
@@ -45598,12 +47705,12 @@
         "type": "object",
         "properties": {
           "network": {
-            "type": "string",
-            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "enum": [
               "testnet",
               "mainnet"
             ],
+            "type": "string",
+            "description": "Stellar network name - indicates whether this is testnet or mainnet configuration",
             "example": "testnet"
           },
           "horizonUrl": {
@@ -45842,6 +47949,519 @@
           }
         }
       },
+      "CreateWebhookSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Human-readable subscription name",
+            "example": "Partner A Round & Milestone Webhooks"
+          },
+          "targetUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "HTTPS URL where webhook POST payloads will be delivered",
+            "example": "https://partner.example.com/webhooks/lumenpulse"
+          },
+          "eventTypes": {
+            "minItems": 1,
+            "description": "List of event types to subscribe to (e.g. pool.round_finalized, milestone.approved, or wildcards like pool.*)",
+            "example": [
+              "pool.round_finalized",
+              "milestone.approved"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "secret": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 512,
+            "description": "Optional initial secret. If omitted, a cryptographically secure 32-byte hex secret is automatically generated.",
+            "example": "d9b7f5c2a1e843219087654321abcdef1234567890abcdef1234567890abcdef"
+          },
+          "partnerId": {
+            "type": "string",
+            "maxLength": 120,
+            "description": "Optional partner identifier",
+            "example": "partner-123"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Optional metadata key-value pairs",
+            "example": {
+              "environment": "production"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "targetUrl",
+          "eventTypes"
+        ]
+      },
+      "WebhookSubscriptionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "partnerId": {
+            "type": "string",
+            "nullable": true,
+            "example": "partner-123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Partner A Webhooks"
+          },
+          "targetUrl": {
+            "type": "string",
+            "example": "https://partner.example.com/webhooks"
+          },
+          "eventTypes": {
+            "example": [
+              "pool.round_finalized",
+              "milestone.approved"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "INACTIVE"
+            ],
+            "type": "string",
+            "example": "ACTIVE"
+          },
+          "secretId": {
+            "type": "string",
+            "example": "sec_active_12345"
+          },
+          "previousSecretId": {
+            "type": "string",
+            "nullable": true,
+            "example": "sec_prev_67890"
+          },
+          "overlapExpiresAt": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-10-19T21:00:00.000Z"
+          },
+          "secretVersion": {
+            "type": "number",
+            "example": 1
+          },
+          "secret": {
+            "type": "string",
+            "description": "The secret value (returned on creation/rotation)",
+            "example": "d9b7f5c2a1e843219087654321abcdef1234567890abcdef1234567890abcdef"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-18T21:00:00.000Z"
+          },
+          "updatedAt": {
+            "type": "string",
+            "example": "2026-10-18T21:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "targetUrl",
+          "eventTypes",
+          "status",
+          "secretId",
+          "secretVersion",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateWebhookSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Updated subscription name",
+            "example": "Partner A Webhooks Updated"
+          },
+          "targetUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "Updated HTTPS target URL",
+            "example": "https://partner.example.com/v2/webhooks"
+          },
+          "eventTypes": {
+            "minItems": 1,
+            "description": "Updated list of event types",
+            "example": [
+              "pool.round_finalized",
+              "milestone.approved",
+              "governance.*"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "enum": [
+              "ACTIVE",
+              "INACTIVE"
+            ],
+            "type": "string",
+            "description": "Subscription status",
+            "example": "ACTIVE"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Optional metadata key-value pairs"
+          }
+        }
+      },
+      "RotateWebhookSecretDto": {
+        "type": "object",
+        "properties": {
+          "newSecret": {
+            "type": "string",
+            "minLength": 16,
+            "maxLength": 512,
+            "description": "Optional new secret value. If omitted, a cryptographically secure 32-byte hex secret is generated automatically."
+          },
+          "overlapMs": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 2592000000,
+            "description": "Overlap window in milliseconds during which the previous secret remains valid for verification. Default: 86400000 (24h). Max: 2592000000 (30d).",
+            "example": 86400000
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Reason for rotation, for audit and record-keeping",
+            "example": "Quarterly key rotation"
+          }
+        }
+      },
+      "WebhookSecretRotationResponseDto": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "secretId": {
+            "type": "string",
+            "example": "sec_active_new"
+          },
+          "previousSecretId": {
+            "type": "string",
+            "nullable": true,
+            "example": "sec_prev_old"
+          },
+          "overlapExpiresAt": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-10-19T21:00:00.000Z"
+          },
+          "newSecret": {
+            "type": "string",
+            "description": "The newly generated or configured secret value for the subscriber",
+            "example": "d9b7f5c2a1e843219087654321abcdef1234567890abcdef1234567890abcdef"
+          },
+          "version": {
+            "type": "number",
+            "example": 2
+          },
+          "rotatedAt": {
+            "type": "string",
+            "example": "2026-10-18T21:00:00.000Z"
+          }
+        },
+        "required": [
+          "subscriptionId",
+          "secretId",
+          "newSecret",
+          "version",
+          "rotatedAt"
+        ]
+      },
+      "WebhookDeliveryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "eventType": {
+            "type": "string",
+            "example": "pool.round_finalized"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {
+              "roundId": 1,
+              "totalPool": "1000000"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "DELIVERED"
+          },
+          "attempts": {
+            "type": "number",
+            "example": 1
+          },
+          "maxAttempts": {
+            "type": "number",
+            "example": 5
+          },
+          "responseStatusCode": {
+            "type": "number",
+            "nullable": true,
+            "example": 200
+          },
+          "responseBody": {
+            "type": "string",
+            "nullable": true,
+            "example": "{\"received\": true}"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "requestHeaders": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "nullable": true,
+            "example": {
+              "X-Webhook-Signature": "sha256=..."
+            }
+          },
+          "executionDurationMs": {
+            "type": "number",
+            "nullable": true,
+            "example": 45
+          },
+          "deliveredAt": {
+            "type": "string",
+            "nullable": true,
+            "example": "2026-10-18T21:05:00.000Z"
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-18T21:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "subscriptionId",
+          "eventType",
+          "payload",
+          "status",
+          "attempts",
+          "maxAttempts",
+          "createdAt"
+        ]
+      },
+      "PaginatedWebhookDeliveriesDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookDeliveryResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 100
+          },
+          "page": {
+            "type": "number",
+            "example": 0
+          },
+          "limit": {
+            "type": "number",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 5
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "WebhookDeadLetterResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "c3d4e5f6-a7b8-9012-cdef-123456789012"
+          },
+          "deliveryId": {
+            "type": "string",
+            "example": "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+          },
+          "subscriptionId": {
+            "type": "string",
+            "example": "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+          },
+          "eventType": {
+            "type": "string",
+            "example": "milestone.approved"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {
+              "milestoneId": "m-1"
+            }
+          },
+          "attempts": {
+            "type": "number",
+            "example": 5
+          },
+          "lastErrorMessage": {
+            "type": "string",
+            "nullable": true,
+            "example": "Connection refused: https://partner.example.com"
+          },
+          "errorHistory": {
+            "example": [
+              {
+                "timestamp": "2026-10-18T21:00:00Z",
+                "error": "ECONNREFUSED"
+              }
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "example": "pending"
+          },
+          "maintainerNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "resolvedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "resolvedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "replayedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "replayCount": {
+            "type": "number",
+            "example": 0
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-18T21:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "deliveryId",
+          "subscriptionId",
+          "eventType",
+          "payload",
+          "attempts",
+          "errorHistory",
+          "status",
+          "replayCount",
+          "createdAt"
+        ]
+      },
+      "PaginatedWebhookDeadLettersDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WebhookDeadLetterResponseDto"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 12
+          },
+          "page": {
+            "type": "number",
+            "example": 0
+          },
+          "limit": {
+            "type": "number",
+            "example": 20
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "data",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "ResolveWebhookDeadLetterDto": {
+        "type": "object",
+        "properties": {
+          "maintainerNotes": {
+            "type": "string",
+            "description": "Maintainer notes for resolving without replaying",
+            "example": "Partner confirmed milestone received out-of-band"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Reason for resolving without replaying",
+            "example": "Partner confirmed milestone received out-of-band"
+          }
+        }
+      },
       "QuietHoursConfigDto": {
         "type": "object",
         "properties": {
@@ -45902,7 +48522,6 @@
           },
           "eventPreferences": {
             "type": "object",
-            "description": "Event category preferences",
             "additionalProperties": {
               "type": "object",
               "properties": {
@@ -45922,7 +48541,8 @@
                   }
                 }
               }
-            }
+            },
+            "description": "Event category preferences"
           },
           "quietHours": {
             "description": "Quiet hours configuration",
@@ -45984,6 +48604,7 @@
           },
           "quietHours": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/QuietHoursConfigDto"
@@ -46043,6 +48664,7 @@
           },
           "eventPreferences": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Event category preferences"
           },
           "quietHours": {
@@ -46131,6 +48753,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata context for the event (e.g., projectId, symbol, poolId)"
           }
         },
@@ -46189,8 +48812,8 @@
           },
           "suppressionBreakdown": {
             "type": "object",
-            "description": "Breakdown of suppression reasons",
-            "additionalProperties": true
+            "additionalProperties": true,
+            "description": "Breakdown of suppression reasons"
           },
           "notificationIds": {
             "description": "IDs of created notifications",
@@ -46230,8 +48853,8 @@
           },
           "metadata": {
             "type": "object",
-            "nullable": true,
-            "additionalProperties": true
+            "additionalProperties": true,
+            "nullable": true
           },
           "createdAt": {
             "format": "date-time",
@@ -46318,6 +48941,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Metadata context for the alert (drift findings, run id, ...)"
           },
           "targetUserIds": {
@@ -46400,6 +49024,74 @@
         },
         "required": [
           "deviceId"
+        ]
+      },
+      "OutboxEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "eventType": {
+            "type": "string",
+            "description": "Domain event type, e.g. \"user.registered\", \"portfolio.snapshot.created\""
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "description": "Serialised event payload"
+          },
+          "correlationId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Correlation ID carrying end-to-end trace across hops"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "processed",
+              "failed",
+              "dead_letter"
+            ],
+            "type": "string"
+          },
+          "attempts": {
+            "type": "number",
+            "description": "Number of dispatch attempts made"
+          },
+          "lastError": {
+            "type": "string",
+            "nullable": true,
+            "description": "Last error message, if any"
+          },
+          "processedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "When the event was last processed (successfully or not)"
+          },
+          "deadLetterAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true,
+            "description": "When the event was moved to the dead-letter queue (poison message)"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "eventType",
+          "payload",
+          "correlationId",
+          "status",
+          "attempts",
+          "lastError",
+          "processedAt",
+          "deadLetterAt",
+          "createdAt"
         ]
       },
       "StartSupportSessionDto": {
@@ -46949,6 +49641,7 @@
           },
           "reviewer": {
             "nullable": true,
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/User"
@@ -47192,73 +49885,6 @@
             "example": 1
           }
         }
-      },
-      "OutboxEvent": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "eventType": {
-            "type": "string",
-            "description": "Domain event type, e.g. \"user.registered\", \"portfolio.snapshot.created\""
-          },
-          "payload": {
-            "type": "object",
-            "description": "Serialised event payload"
-          },
-          "correlationId": {
-            "type": "string",
-            "nullable": true,
-            "description": "Correlation ID carrying end-to-end trace across hops"
-          },
-          "status": {
-            "enum": [
-              "pending",
-              "processed",
-              "failed",
-              "dead_letter"
-            ],
-            "type": "string"
-          },
-          "attempts": {
-            "type": "number",
-            "description": "Number of dispatch attempts made"
-          },
-          "lastError": {
-            "type": "string",
-            "nullable": true,
-            "description": "Last error message, if any"
-          },
-          "processedAt": {
-            "format": "date-time",
-            "type": "string",
-            "nullable": true,
-            "description": "When the event was last processed (successfully or not)"
-          },
-          "deadLetterAt": {
-            "format": "date-time",
-            "type": "string",
-            "nullable": true,
-            "description": "When the event was moved to the dead-letter queue (poison message)"
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "eventType",
-          "payload",
-          "correlationId",
-          "status",
-          "attempts",
-          "lastError",
-          "processedAt",
-          "deadLetterAt",
-          "createdAt"
-        ]
       },
       "CreateExportJobDto": {
         "type": "object",
@@ -47817,6 +50443,7 @@
           "article": {
             "nullable": true,
             "description": "Article details",
+            "type": "object",
             "allOf": [
               {
                 "$ref": "#/components/schemas/NewsArticleDto"
@@ -47940,11 +50567,11 @@
         "type": "object",
         "properties": {
           "kind": {
-            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
+            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -48023,11 +50650,11 @@
         "type": "object",
         "properties": {
           "kind": {
-            "type": "string",
             "enum": [
               "tag",
               "category"
             ],
+            "type": "string",
             "example": "tag"
           },
           "value": {
@@ -48116,6 +50743,7 @@
           },
           "conditions": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Optional conditions",
             "example": {
               "roles": [
@@ -48148,7 +50776,11 @@
             "example": "new-onboarding-flow"
           },
           "action": {
-            "type": "object",
+            "enum": [
+              "remove",
+              "upsert"
+            ],
+            "type": "string",
             "description": "Action performed: 'upsert' | 'remove'",
             "example": "upsert"
           },
@@ -48166,6 +50798,7 @@
           },
           "previousTargeting": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) before this mutation; null if the flag did not exist",
             "example": {
@@ -48176,6 +50809,7 @@
           },
           "newTargeting": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true,
             "description": "Targeting (rollout percentage, allow/deny lists) after this mutation; null for removals",
             "example": {
@@ -48325,6 +50959,7 @@
           },
           "conditions": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Optional conditions (e.g. user roles, specific user IDs)",
             "example": {
               "roles": [
@@ -48341,69 +50976,6 @@
         "required": [
           "key",
           "enabled"
-        ]
-      },
-      "FeatureFlag": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "key": {
-            "type": "string"
-          },
-          "enabled": {
-            "type": "boolean"
-          },
-          "rolloutPercentage": {
-            "type": "number",
-            "nullable": true,
-            "description": "Percentage of principals (0-100) the flag targets, or null for no rollout.\n\nWhen set, this value alone determines the evaluation result — `enabled` is\nnot consulted — so a rollout can serve a fraction of users and later be\nwidened. 0 is a real value meaning \"serve nobody\", which makes it the\nsingle-field kill switch. Null leaves the flag on plain on/off."
-          },
-          "allowList": {
-            "nullable": true,
-            "description": "Principal IDs always granted the flag, regardless of the rollout percentage.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "denyList": {
-            "nullable": true,
-            "description": "Principal IDs always denied the flag; takes precedence over `allowList`.",
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "conditions": {
-            "type": "object",
-            "nullable": true
-          },
-          "changedBy": {
-            "type": "string",
-            "nullable": true
-          },
-          "createdAt": {
-            "format": "date-time",
-            "type": "string"
-          },
-          "updatedAt": {
-            "format": "date-time",
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "key",
-          "enabled",
-          "rolloutPercentage",
-          "allowList",
-          "denyList",
-          "conditions",
-          "changedBy",
-          "createdAt",
-          "updatedAt"
         ]
       },
       "RoadmapItemDto": {
@@ -48665,7 +51237,12 @@
             "example": "a1b2c3d4..."
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "SUCCESS",
+              "PENDING",
+              "FAILED"
+            ],
+            "type": "string",
             "description": "Status of the contribution on ledger",
             "example": "SUCCESS"
           },
@@ -48779,7 +51356,12 @@
             "type": "number"
           },
           "status": {
-            "type": "object"
+            "type": "string",
+            "enum": [
+              "success",
+              "failed",
+              "partial"
+            ]
           },
           "error": {
             "type": "string"
@@ -48905,7 +51487,10 @@
             "type": "string"
           },
           "byVault": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": {
+              "type": "number"
+            }
           }
         },
         "required": [
@@ -48948,7 +51533,8 @@
             "type": "number"
           },
           "rawPayload": {
-            "type": "object"
+            "type": "object",
+            "additionalProperties": true
           },
           "failureCount": {
             "type": "number"
@@ -49096,6 +51682,7 @@
           },
           "rawPayload": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Raw event payload as emitted by the Soroban contract (event data)",
             "example": {
               "from": "GBUQWP3BOUZX34ULNQG23RQ6F4BWFIREXOWJ2GY2FOLGABIDESX56JP2",
@@ -49141,13 +51728,13 @@
             "example": "transfer"
           },
           "status": {
-            "type": "string",
-            "description": "Current processing status of the event",
             "enum": [
               "PENDING",
               "PROCESSED",
               "FAILED"
             ],
+            "type": "string",
+            "description": "Current processing status of the event",
             "example": "PENDING"
           },
           "createdAt": {
@@ -49604,7 +52191,6 @@
           },
           "githubHandle": {
             "type": "string",
-            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           }
@@ -49643,7 +52229,6 @@
           },
           "githubHandle": {
             "type": "string",
-            "pattern": "GITHUB_HANDLE_PATTERN",
             "example": "octocat",
             "description": "GitHub username of the contributor"
           },
@@ -49945,6 +52530,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           }
         },
@@ -50441,6 +53027,7 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "example": {
               "contributor_registry": {
                 "id": "CCOVDGHF3XQ5RAFY6DJ36G6CHQJF54QCOBZXCC3LBMKNEWQJLDGXQJSB"
@@ -50449,6 +53036,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "isActive": {
@@ -50525,6 +53113,7 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Contract deployment records keyed by contract name",
             "example": {
               "contributor_registry": {
@@ -50535,6 +53124,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Environment metadata (RPC URL, admin addresses, deployment notes)",
             "example": {
               "rpc_url": "https://soroban-testnet.stellar.org:443"
@@ -50566,10 +53156,12 @@
           },
           "contracts": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Contract deployment records"
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Environment metadata"
           },
           "isActive": {
@@ -50706,6 +53298,7 @@
           },
           "seededData": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Summary of currently seeded data"
           }
         },
@@ -50756,6 +53349,7 @@
           },
           "details": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Details about seeded entities"
           }
         },
@@ -50790,12 +53384,20 @@
             "description": "Run identifier — pass this to the teardown endpoint"
           },
           "kind": {
-            "type": "object",
+            "enum": [
+              "demo_seed",
+              "testnet_account"
+            ],
+            "type": "string",
             "description": "What produced the run",
             "example": "demo_seed"
           },
           "status": {
-            "type": "object",
+            "enum": [
+              "active",
+              "torn_down"
+            ],
+            "type": "string",
             "description": "Run status",
             "example": "active"
           },
@@ -50863,7 +53465,12 @@
         "type": "object",
         "properties": {
           "type": {
-            "type": "object",
+            "enum": [
+              "testnet_account",
+              "demo_contributor",
+              "demo_grant_round"
+            ],
+            "type": "string",
             "description": "Resource type",
             "example": "demo_contributor"
           },
@@ -50878,14 +53485,14 @@
             "example": "Demo contributor demo-alice"
           },
           "action": {
-            "type": "string",
-            "description": "What happened, or would happen in a dry run",
             "enum": [
               "removed",
               "would_remove",
               "not_found",
               "skipped"
             ],
+            "type": "string",
+            "description": "What happened, or would happen in a dry run",
             "example": "removed"
           },
           "reason": {
@@ -51021,6 +53628,7 @@
           },
           "metadata": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Additional metadata for profile or moderation UIs"
           }
         },
@@ -51198,6 +53806,7 @@
           },
           "progressDetails": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -51311,6 +53920,7 @@
           },
           "progressDetails": {
             "type": "object",
+            "additionalProperties": true,
             "nullable": true
           },
           "errorMessage": {
@@ -51570,12 +54180,12 @@
           },
           "filters": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            },
-            "additionalProperties": true
+            }
           },
           "isSubscribed": {
             "type": "boolean",
@@ -51682,12 +54292,12 @@
           },
           "filters": {
             "type": "object",
+            "additionalProperties": true,
             "description": "Domain-specific filter parameters as a JSON object.  These mirror the query parameters accepted by the corresponding discovery endpoint (e.g. GET /grants/rounds, GET /search/projects, GET /news).",
             "example": {
               "status": "active",
               "keyword": "DeFi"
-            },
-            "additionalProperties": true
+            }
           },
           "isSubscribed": {
             "type": "boolean",
@@ -51765,6 +54375,9 @@
           },
           "socialLinks": {
             "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
             "description": "Social media links"
           }
         },
@@ -51987,13 +54600,16 @@
             "maxLength": 120
           },
           "scopes": {
-            "type": "string",
-            "enum": [
-              "data:read",
-              "data:write",
-              "admin"
-            ],
-            "minItems": 1
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "enum": [
+                "data:read",
+                "data:write",
+                "admin"
+              ]
+            }
           },
           "expiresAt": {
             "type": "string"
