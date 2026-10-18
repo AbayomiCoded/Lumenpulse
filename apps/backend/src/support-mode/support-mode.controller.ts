@@ -11,7 +11,13 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
 import type { Request as ExpressRequest } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -22,13 +28,27 @@ import { JWT_SECURITY_SCHEME } from '../openapi/openapi.constants';
 import { SupportModeService } from './support-mode.service';
 
 export class StartSupportSessionDto {
+  @ApiProperty({ format: 'uuid', description: 'User to view as' })
   @IsUUID()
   subjectId: string;
 
+  @ApiProperty({ minLength: 10, maxLength: 500 })
   @IsString()
   @MinLength(10)
   @MaxLength(500)
   reason: string;
+}
+
+export class StartSupportSessionResponseDto {
+  @ApiProperty({ description: 'Read-only access token, valid 15 minutes' })
+  accessToken: string;
+
+  @ApiProperty({
+    type: 'object',
+    additionalProperties: true,
+    description: 'Support session summary (id, actor, subject, expiry, ...)',
+  })
+  session: Record<string, unknown>;
 }
 
 type AdminRequest = ExpressRequest & { user: { id: string } };
@@ -43,6 +63,7 @@ export class SupportModeController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({ type: StartSupportSessionResponseDto })
   @ApiOperation({
     summary:
       'Start a read-only support session as a user (returns a 15 minute token)',
