@@ -38,6 +38,13 @@ This is the single source of truth for running the full LumenPulse stack locally
 
 The monorepo root uses **pnpm workspaces** and **TurboRepo** to coordinate JS/TS builds.
 
+> **Want the whole stack in one command?**
+> [`docker compose up -d --build`](LOCAL_STACK.md) now brings up the webapp, the backend,
+> data-processing, Postgres and Redis together, applies migrations automatically, and wires
+> every dependency through a health check. This document remains the reference for running each
+> service directly from source, which is what you want when you are debugging a single service.
+> See [LOCAL_STACK.md](LOCAL_STACK.md).
+
 ---
 
 ## 2. Prerequisites
@@ -607,6 +614,10 @@ API_KEY=local-dev-key
 | Mobile (Expo) | `8081` | Expo default |
 | PostgreSQL (host) | `5433` | Docker compose `ports` mapping |
 | Redis | `6379` | Docker compose `ports` mapping |
+
+> When using the full `docker compose` stack, host ports are overridable via
+> `WEBAPP_HOST_PORT`, `BACKEND_HOST_PORT`, `POSTGRES_PORT` and `REDIS_PORT` in a root `.env`.
+> See [LOCAL_STACK.md](LOCAL_STACK.md#configuration).
 
 ---
 
