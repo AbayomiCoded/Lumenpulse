@@ -64,6 +64,18 @@ jobs:
       working-directory: ./apps/webapp
       run: node scripts/generate-api-types.mjs --check
 
+    - name: Generate Software Bill of Materials (SBOM)
+      uses: anchore/sbom-action@v0
+      with:
+        format: cyclonedx-json
+        output-file: sbom.cdx.json
+
+    - name: Upload SBOM Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: software-bill-of-materials
+        path: sbom.cdx.json
+
   migration-safety:
     runs-on: ubuntu-latest
     defaults:
