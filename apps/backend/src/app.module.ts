@@ -85,6 +85,7 @@ import { ProfilingModule } from './common/profiling/profiling.module';
 import { QueryCountMiddleware } from './common/profiling/query-count.middleware';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SavedSearchesModule } from './saved-searches/saved-searches.module';
+import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module';
 
 @Module({
   imports: [
@@ -234,6 +235,7 @@ import { SavedSearchesModule } from './saved-searches/saved-searches.module';
 
     // Saved searches & subscriptions
     SavedSearchesModule,
+    ServiceApiKeysModule,
   ],
   controllers: [AppController, TestController, TestExceptionController],
   providers: [
