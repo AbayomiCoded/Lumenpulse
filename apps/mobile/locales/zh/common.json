@@ -209,6 +209,7 @@
       "active": "活跃中",
       "pending": "待开始",
       "ended": "已结束",
+      "matching": "匹配中",
       "finalized": "已确认",
       "distributed": "已分配"
     },
