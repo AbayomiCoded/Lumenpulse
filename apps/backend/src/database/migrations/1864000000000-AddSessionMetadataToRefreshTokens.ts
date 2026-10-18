@@ -5,8 +5,8 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * location hint and the last time the session was seen. Both columns are
  * nullable, so the change is metadata-only on Postgres.
  */
-export class AddSessionMetadataToRefreshTokens1863000000000 implements MigrationInterface {
-  name = 'AddSessionMetadataToRefreshTokens1863000000000';
+export class AddSessionMetadataToRefreshTokens1864000000000 implements MigrationInterface {
+  name = 'AddSessionMetadataToRefreshTokens1864000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(

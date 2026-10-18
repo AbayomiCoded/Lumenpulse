@@ -14,10 +14,16 @@ import { PasswordResetToken } from './entities/password-reset-token.entity';
 import { AuditModule } from '../audit/audit.module';
 import { AdminSessionsController } from './admin-sessions.controller';
 import { RefreshToken } from './entities/refresh-token.entity';
+import { SupportSession } from '../support-mode/entities/support-session.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, PasswordResetToken, RefreshToken]),
+    TypeOrmModule.forFeature([
+      User,
+      PasswordResetToken,
+      RefreshToken,
+      SupportSession,
+    ]),
     forwardRef(() => UsersModule),
     EmailModule,
     forwardRef(() => AuditModule),
