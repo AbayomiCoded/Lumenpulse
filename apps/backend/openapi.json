@@ -1778,7 +1778,7 @@
     },
     "/grants/rounds": {
       "get": {
-        "description": "Retrieves all available grant rounds (active, pending, finalized).",
+        "description": "Retrieves all grant rounds and their lifecycle state.",
         "operationId": "GrantsController_listRounds",
         "parameters": [
           {
@@ -2406,7 +2406,7 @@
     },
     "/grants/rounds/{id}/finalize": {
       "post": {
-        "description": "Flags the round as finalized, calculating final matching pool allocations. Requires admin role.",
+        "description": "Closes a round after matching is complete. Requires admin role.",
         "operationId": "GrantsController_finalizeRound",
         "parameters": [
           {
@@ -41123,9 +41123,16 @@
             "example": false
           },
           "status": {
+            "enum": [
+              "DRAFT",
+              "OPEN",
+              "MATCHING",
+              "CLOSED",
+              "DISBURSED"
+            ],
             "type": "string",
             "description": "Current status of the round",
-            "example": "ACTIVE"
+            "example": "OPEN"
           }
         },
         "required": [
