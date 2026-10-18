@@ -237,6 +237,7 @@ describe('JwtStrategy support tokens', () => {
     return new JwtStrategy(
       users as never,
       sessions as never,
+      { findOne: jest.fn(), update: jest.fn() } as never,
       config as unknown as ConfigService,
     );
   };
