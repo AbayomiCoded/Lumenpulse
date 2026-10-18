@@ -11,6 +11,8 @@ import { JwtStrategy } from './jwt.strategy';
 import { RolesGuard } from './roles.guard';
 import { User } from '../users/entities/user.entity';
 import { PasswordResetToken } from './entities/password-reset-token.entity';
+import { AuditModule } from '../audit/audit.module';
+import { AdminSessionsController } from './admin-sessions.controller';
 import { RefreshToken } from './entities/refresh-token.entity';
 
 @Module({
@@ -18,6 +20,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
     TypeOrmModule.forFeature([User, PasswordResetToken, RefreshToken]),
     forwardRef(() => UsersModule),
     EmailModule,
+    forwardRef(() => AuditModule),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -30,7 +33,7 @@ import { RefreshToken } from './entities/refresh-token.entity';
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, AdminSessionsController],
   providers: [AuthService, JwtStrategy, RolesGuard],
   exports: [AuthService, JwtStrategy, RolesGuard, PassportModule],
 })
