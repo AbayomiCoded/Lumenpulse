@@ -1,0 +1,63 @@
+# CODEOWNERS — Lumenpulse
+#
+# Owners are review *requests*, not merge rights. Being an owner means a change
+# under your path needs your eyes before it lands; it does not mean you can merge
+# it. Required approvals are configured as a branch protection rule, not here.
+#
+# Provenance: each area is mapped to the two contributors with the most merged
+# pull requests touching that area on `main`. The mapping is a starting point,
+# not a verdict — if you own something and the mapping is wrong, open a PR that
+# fixes this file rather than working around it.
+#
+# ORDERING. GitHub applies the LAST matching pattern, so the catch-all `*` must
+# come first; if it came last it would win against every specific rule below it
+# and this file would do nothing. Specific rules follow, most general to most
+# specific.
+#
+# Reference: https://docs.github.com/articles/about-code-owners
+
+# Catch-all: nothing is ever unowned, and scripts/check-codeowners.mjs reports
+# any path that matches only this rule so the gap is visible rather than silent.
+*                           @fadee26 @paris27-A
+
+# ── Shared surfaces ────────────────────────────────────────────────────────
+# Workflows, CI config and automation. Changes here alter every contributor's
+# experience, so they are the most widely owned paths in the repository.
+.github/                    @fadee26 @eleven-smg
+
+# Root build/lint orchestration shared by every app.
+package.json                @fadee26 @paris27-A
+pnpm-lock.yaml              @fadee26
+pnpm-workspace.yaml         @fadee26
+turbo.json                  @fadee26
+docker-compose.yml          @fadee26 @eleven-smg
+docker-compose.monitoring.yml @fadee26
+
+# ── Applications ───────────────────────────────────────────────────────────
+apps/backend/               @paris27-A @eleven-smg @Chrisland-ui
+apps/webapp/                @datagerl @feyishola @paris27-A
+apps/mobile/                @praise-idise @monique-7arch @OmniZlatoon
+apps/data-processing/       @CHKM001 @paris27-A @Rosemary-ux
+apps/onchain/               @cybermax4200 @Ayinkx
+
+# ── Contracts deployment tooling ───────────────────────────────────────────
+# The contract scripts are shared with onchain: a WASM size regression or a
+# deploy-path change is usually one of the two failing together.
+scripts/                    @cybermax4200 @fadee26
+
+# ── Documentation ───────────────────────────────────────────────────────────
+CONTRIBUTING.md             @fadee26 @eleven-smg
+CODE_REVIEW_GUIDE.md        @fadee26 @eleven-smg
+docs/                       @fadee26 @eleven-smg
+
+# ── Editor and agent configuration ─────────────────────────────────────────
+# Shared tooling that changes how every contributor's editor behaves.
+.claude/                    @fadee26 @paris27-A
+.vscode/                    @fadee26 @paris27-A
+
+# ── Observability ───────────────────────────────────────────────────────────
+# Prometheus rules and the Grafana dashboard are the alerting contract; a change
+# here can page someone at 3am, so it is not a drive-by change.
+prometheus.yml              @fadee26 @eleven-smg
+prometheus-rules.yml        @fadee26 @eleven-smg
+lumenpulse-grafana-dashboard.json @fadee26
