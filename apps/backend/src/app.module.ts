@@ -44,6 +44,7 @@ import {
 import { TestController } from './test/test.controller';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
+import { SupportModeModule } from './support-mode/support-mode.module';
 import { UsersModule } from './users/users.module';
 import { GrantsModule } from './grants/grants.module';
 import { HealthModule } from './health/health.module';
@@ -147,6 +148,7 @@ import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module
     WebhookModule,
     UploadModule,
     AuthModule,
+    SupportModeModule,
     UsersModule,
     HealthModule,
     SchedulerModule,
