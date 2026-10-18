@@ -21,6 +21,67 @@
 
 ## 1. Overview
 
+## CORS and Security Headers
+
+This section records the CORS policy and the security headers served by the
+backend API, and the tests that verify them.
+
+### CORS policy
+
+- The allowlist is defined by the `CORS_ORIGIN` environment variable. When set
+  to a single origin it is used verbatim; when set to a comma-separated list it
+  becomes an explicit allowlist. There is no wildcard `*` origin.
+- In production the backend refuses to start unless `CORS_ORIGIN` is set
+  (`apps/backend/src/lib/config.ts`).
+- The global CORS policy does **not** permit credentialed requests
+  (`credentials: false`). Endpoint-specific gateways that genuinely need
+  credentialed cross-origin requests must opt in explicitly (see
+  `PriceGateway` below).
+- Preflight responses (`OPTIONS`) carry the allowlist origin, allowed methods,
+  allowed headers and a 24-hour `max-age` (`86400`).
+- Rate-limit response headers are exposed to browser callers via
+  `Access-Control-Expose-Headers` so that authenticated web clients can read
+  `Retry-After`, `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`.
+
+### Security headers
+
+Every response is decorated by `helmet` with the following headers:
+
+| Header | Value / intent |
+|---|---|
+| Content-Security-Policy | Defaults: `default-src 'self'`; `frame-ancestors 'none'`; `form-action 'self'`; `base-uri 'self'`. `crossOriginEmbedderPolicy: false` is set to keep WebSockets working. |
+| X-Content-Type-Options | `nosniff` |
+| X-Frame-Options | Set by helmet (value depends on CSP config) |
+| Strict-Transport-Security | Set by helmet when the response is served over HTTPS |
+| Referrer-Policy | Set by helmet |
+
+### WebSocket gateway CORS
+
+`PriceGateway` (`apps/backend/src/price/price.gateway.ts`) reads
+`CORS_ORIGIN` at gateway configuration time and splits it into an allowlist.
+The previous `origin: '*'` has been replaced with the explicit allowlist so the
+WebSocket channel is subject to the same origin restrictions as the HTTP API.
+
+### Tests
+
+`apps/backend/test/cors-and-security-headers.e2e-spec.ts` covers:
+
+- Rejections of origins not in the allowlist
+- Acceptance of the configured origin
+- Absence of `Access-Control-Allow-Credentials: true`
+- Preflight (`OPTIONS`) behaviour and header contents
+- Security header presence (CSP, X-Content-Type-Options, X-Frame-Options,
+  Strict-Transport-Security when present)
+- CORS exposure of rate-limit headers
+
+### Accepted deviations
+
+- The health smoke endpoint `/health` is not throttled, so rate-limit headers
+  are not asserted on that path in this suite. The throttled-path behaviour is
+  covered by `rate-limit-validation.e2e-spec.ts`.
+- The `Server` header is not stripped; a follow-up can remove it once a custom
+  value is acceptable for this service.
+
 LumenPulse is a decentralised crypto news aggregator and portfolio management platform built on the Stellar/Soroban blockchain. The system spans five layers:
 
 - **Webapp** (Next.js) — browser-based UI
@@ -146,7 +207,8 @@ All authenticated API calls cross this boundary.
 | Session revocation | `GET /auth/sessions`, `POST /auth/sessions/:id/revoke` — queries `refresh_tokens` table; sets `revokedAt`; only owner can revoke |
 | 2FA (optional) | `apps/backend/src/auth/auth.service.ts` — speakeasy TOTP; QR code provisioning |
 | Stellar wallet challenge | `auth.service.ts` — SEP-10-style nonce challenge signed by the client wallet; server keypair `STELLAR_SERVER_SECRET` |
-| CORS | Configured in `CORS_ORIGIN`; enforced by NestJS CORS middleware |
+| CORS | Explicit per-origin allowlist via `CORS_ORIGIN`; single string resolves to that origin; multiple origins resolve to an allowlist. No wildcard origins; no credentialed cross-origin requests in the global policy. See [CORS and Security Headers](#cors-and-security-headers) for the full policy and test coverage. |
+| Security headers | `helmet` middleware on every response with a tightened Content-Security-Policy (defaultSrc/frameAncestors/formAction/baseUri: 'self'/'none'), plus X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security (on HTTPS), and Referrer-Policy. See [CORS and Security Headers](#cors-and-security-headers) for the full header inventory and test coverage. |
 | Refresh token rotation | 30-day TTL; stored hashed in `refresh_tokens` table; invalidated on logout or revocation |
 | Password hashing | bcrypt, 10 rounds (`AuthService.BCRYPT_SALT_ROUNDS`) |
 | Password reset | 32-byte random token, 1-hour TTL (`apps/backend/src/auth/entities/password-reset-token.entity.ts`) |
