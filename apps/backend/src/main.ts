@@ -28,8 +28,25 @@ async function bootstrap() {
   const port = config.port;
   await app.listen(port);
 
-  console.log(`Application is running on: http://localhost:${port}`);
-  console.log(`Swagger docs available at: http://localhost:${port}/api/docs`);
+  const network = config.stellar.network.toUpperCase();
+  const env = config.environment;
+  const isMainnet = config.stellar.network === 'mainnet';
+  const facilitiesStatus = isMainnet
+    ? 'DISABLED (PROVABLY UNREACHABLE)'
+    : 'ACTIVE (TESTNET ONLY)';
+
+  console.log(`
+┌──────────────────────────────────────────────────────────────────────────────┐
+│                       LUMENPULSE BACKEND API BOOT                            │
+├──────────────────────────────────────────────────────────────────────────────┤
+│  Active Network:    ${network.padEnd(54)}│
+│  Environment:       ${env.padEnd(54)}│
+│  Port:              ${String(port).padEnd(54)}│
+│  API Version:       v1 (Default URI Versioning)                             │
+│  Test/Demo Routes:  ${facilitiesStatus.padEnd(54)}│
+│  Swagger Docs:      http://localhost:${String(port)}/api/docs${' '.repeat(Math.max(0, 36 - String(port).length))}│
+└──────────────────────────────────────────────────────────────────────────────┘
+`);
 }
 
 void bootstrap();

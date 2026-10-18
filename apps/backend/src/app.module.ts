@@ -88,6 +88,9 @@ import { QueryCountMiddleware } from './common/profiling/query-count.middleware'
 import { DashboardModule } from './dashboard/dashboard.module';
 import { SavedSearchesModule } from './saved-searches/saved-searches.module';
 import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module';
+import { config } from './lib/config';
+
+const isMainnet = config.stellar.network === 'mainnet';
 
 @Module({
   imports: [
@@ -203,8 +206,8 @@ import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module
     // Bot auth
     BotAuthModule,
 
-    // Demo bootstrap
-    DemoBootstrapModule,
+    // Demo bootstrap (testnet only)
+    ...(!isMainnet ? [DemoBootstrapModule] : []),
 
     // Contributor feed
     ContributorFeedModule,
@@ -240,7 +243,10 @@ import { ServiceApiKeysModule } from './service-api-keys/service-api-keys.module
     SavedSearchesModule,
     ServiceApiKeysModule,
   ],
-  controllers: [AppController, TestController, TestExceptionController],
+  controllers: [
+    AppController,
+    ...(!isMainnet ? [TestController, TestExceptionController] : []),
+  ],
   providers: [
     AppService,
     StructuredLoggerService,
