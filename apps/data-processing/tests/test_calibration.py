@@ -99,9 +99,15 @@ def test_committed_curves_exist_and_match_a_fresh_build():
             raw_field=spec["raw_field"],
             notes=spec["notes"],
         )
-        assert committed == fresh, (
-            f"{model} calibration is stale; run scripts/build_calibration.py --write"
-        )
+        stale = f"{model} calibration is stale; run scripts/build_calibration.py --write"
+        if model == "forecast":
+            # Depends on sklearn training output, which can differ slightly
+            # across Python / library versions: compare the decision, not bits.
+            assert committed["method"] == fresh["method"], stale
+            assert committed["n_samples"] == fresh["n_samples"], stale
+            assert abs(committed["before"]["ece"] - fresh["before"]["ece"]) < 0.05, stale
+        else:
+            assert committed == fresh, stale
         assert committed["before"]["curve"], "reliability curve must be committed"
 
 
