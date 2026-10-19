@@ -58,13 +58,11 @@ jobs:
       # Three test files were already failing when this workflow was added: the
       # webapp had no CI, so regressions merged unnoticed (10 tests; see
       # docs/ci-path-filters.md). They are excluded explicitly so the other 39
-      # files gate every pull request. Remove an --exclude as its file is fixed.
+      # files gate every pull request. Remove a name from VITEST_EXCLUDE as its file is fixed.
       - name: Unit tests
-        run: >
-          npx vitest run
-          --exclude '__tests__/price-alerts.test.tsx'
-          --exclude 'app/layout.test.tsx'
-          --exclude 'contexts/StellarConfigContext.test.tsx'
+        env:
+          VITEST_EXCLUDE: __tests__/price-alerts.test.tsx,app/layout.test.tsx,contexts/StellarConfigContext.test.tsx
+        run: npx vitest run
 
       - name: Build
         run: npm run build

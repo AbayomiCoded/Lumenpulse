@@ -63,6 +63,6 @@ A path that needs no CI (docs, editor settings) belongs under `noCiRequired`.
 `webapp.yml` is the first CI the webapp has had, and it surfaced regressions that merged
 unnoticed: 10 failing tests in `__tests__/price-alerts.test.tsx`, `app/layout.test.tsx` and
 `contexts/StellarConfigContext.test.tsx`. Rather than ship a permanently red check (which
-teaches everyone to ignore it) or hide the problem, those three files are excluded by name in
-the workflow, so the remaining 39 test files, the API type check and the production build
-gate every pull request. Fixing a file means deleting its `--exclude`.
+teaches everyone to ignore it) or hide the problem, those three files are excluded by name (the `VITEST_EXCLUDE` variable
+in the workflow, read by `apps/webapp/vitest.config.ts`), so the remaining 39 test files, the API type check and the production build
+gate every pull request. Fixing a file means deleting its name from `VITEST_EXCLUDE`.
