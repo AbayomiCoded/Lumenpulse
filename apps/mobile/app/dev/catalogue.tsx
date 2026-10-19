@@ -96,7 +96,7 @@ function ToggleButton({ label, onPress }: { label: string; onPress: () => void }
       accessibilityRole="button"
       accessibilityLabel={label}
     >
-      <Text style={styles.toggleButtonText}>{label}</Text>
+      <Text style={[styles.toggleButtonText, { color: colors.onAccent }]}>{label}</Text>
     </TouchableOpacity>
   );
 }
@@ -364,7 +364,6 @@ const styles = StyleSheet.create({
     margin: 12,
   },
   toggleButtonText: {
-    color: '#ffffff',
     fontWeight: '600',
   },
   note: {
