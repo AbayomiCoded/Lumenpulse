@@ -73,7 +73,7 @@ export class SpanImpl implements Span {
     return this;
   }
 
-  recordException(error: Error | unknown): this {
+  recordException(error: unknown): this {
     if (this.isEnded) return this;
     const err = error instanceof Error ? error : new Error(String(error));
     this.status = 'ERROR';

@@ -40,7 +40,7 @@ export interface Span {
   setAttribute(key: string, value: unknown): this;
   setAttributes(attrs: Record<string, unknown>): this;
   addEvent(name: string, attributes?: Record<string, unknown>): this;
-  recordException(error: Error | unknown): this;
+  recordException(error: unknown): this;
   setStatus(status: SpanStatus, message?: string): this;
   end(): SpanRecord;
   toRecord(): SpanRecord;

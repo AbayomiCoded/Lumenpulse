@@ -55,6 +55,7 @@ export class DataProcessingClient {
     private readonly http: HttpService,
     settings: ConfigService,
     metrics: MetricsService,
+    @Optional() private readonly tracer?: TracerService,
   ) {
     this.baseUrl = (
       settings.get<string>('PYTHON_API_URL') || config.python.apiUrl
@@ -153,10 +154,12 @@ export class DataProcessingClient {
       (method === 'POST' && path !== '/analyze')
         ? 0
         : this.retries;
+    const traceparent = this.tracer?.getTraceparent();
     const headers = {
       'Content-Type': 'application/json',
       [CORRELATION_ID_HEADER]: RequestContextService.getCorrelationId(),
       [REQUEST_ID_HEADER]: RequestContextService.getRequestId(),
+      ...(traceparent ? { traceparent } : {}),
       ...options.headers,
       ...(this.apiKey ? { 'X-API-Key': this.apiKey } : {}),
     };
