@@ -36,27 +36,28 @@ export class TypeOrmQueryTracer implements TypeOrmLogger {
     span.end();
   }
 
-  logQuerySlow(time: number, query: string, parameters?: unknown[]): void {
+  logQuerySlow(time: number, query: string, _parameters?: unknown[]): void {
     const span = this.tracer.startSpan('db.query.slow', {
       kind: 'CLIENT',
       attributes: {
         'db.system': 'postgresql',
         'db.statement': query,
         'db.duration_ms': time,
+        'db.params_count': _parameters ? _parameters.length : 0,
       },
     });
     span.end();
   }
 
-  logSchemaBuild(message: string): void {
+  logSchemaBuild(_message: string): void {
     // schema build log
   }
 
-  logMigration(message: string): void {
+  logMigration(_message: string): void {
     // migration log
   }
 
-  log(level: 'log' | 'info' | 'warn', message: unknown): void {
+  log(_level: 'log' | 'info' | 'warn', _message: unknown): void {
     // general log
   }
 }

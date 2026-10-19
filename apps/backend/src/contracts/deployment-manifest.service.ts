@@ -53,7 +53,7 @@ export class DeploymentManifestService implements OnModuleInit {
           this.logger.log(
             'testnet-manifest.json changed on disk. Reloading...',
           );
-          this.refreshManifest();
+          void this.refreshManifest();
         }
       });
     }
