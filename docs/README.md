@@ -151,7 +151,7 @@ The directory currently mixes three styles. This is the convention going forward
 | Durable reference or runbook | `SCREAMING_CASE.md` | `DEPLOYMENT.md` |
 | Area guide, living document | `kebab-case.md` | `backend-contributing.md` |
 | Architecture decision record | `adr/ADR-NNNN-kebab-case.md` | `adr/ADR-0002-transactional-outbox.md` |
-| Open questions and backlog | `TODO.md` at the repository root, not here | — |
+| Open questions and backlog | [GitHub Issues](https://github.com/Pulsefy/Lumenpulse/issues), not here | — |
 
 Two rules behind it:
 
