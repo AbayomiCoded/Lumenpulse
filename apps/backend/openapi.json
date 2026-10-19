@@ -29677,7 +29677,7 @@
         ]
       },
       "post": {
-        "description": "Creates a new feature flag or modifies the active state of an existing one, including its rollout percentage and allow/deny lists. Omitting the targeting fields leaves any existing rollout untouched. Requires admin role.",
+        "description": "Creates a new feature flag or modifies the active state of an existing one, including its rollout percentage and allow/deny lists. Omitting the targeting fields leaves any existing rollout untouched. Changing a flag marked sensitive requires `confirm: true`. Requires admin role.",
         "operationId": "FeatureFlagsController_upsert",
         "parameters": [
           {
@@ -29794,6 +29794,24 @@
           },
           "422": {
             "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Flag is sensitive and the request did not set `confirm: true`",
             "content": {
               "application/json": {
                 "schema": {
@@ -29989,7 +30007,7 @@
     },
     "/v1/feature-flags/{key}/history": {
       "get": {
-        "description": "Retrieve the full ordered audit log for a specific feature flag. Records include actor, previous state, new state, and timestamp.",
+        "description": "Retrieve the full ordered audit log for a specific feature flag. Records include actor, previous state, new state, and timestamp. Requires admin role, since entries identify the operators involved.",
         "operationId": "FeatureFlagsController_history",
         "parameters": [
           {
@@ -30025,6 +30043,42 @@
           },
           "400": {
             "description": "Malformed request or validation failure",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden (admin only)",
             "content": {
               "application/json": {
                 "schema": {
@@ -30096,7 +30150,12 @@
             }
           }
         },
-        "summary": "Get flag change history (admin)",
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Get flag change history (admin only)",
         "tags": [
           "feature-flags"
         ]
@@ -30387,6 +30446,15 @@
             }
           },
           {
+            "name": "confirm",
+            "required": false,
+            "in": "query",
+            "description": "Must be `true` to delete a flag marked sensitive",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
             "name": "Idempotency-Key",
             "in": "header",
             "required": false,
@@ -30501,6 +30569,24 @@
           },
           "422": {
             "description": "Idempotency-Key was reused with a different request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponseDto"
+                }
+              }
+            },
+            "headers": {
+              "X-Request-Id": {
+                "description": "Correlation id for this request",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Flag is sensitive and the request did not pass `confirm=true`",
             "content": {
               "application/json": {
                 "schema": {
@@ -50067,16 +50153,36 @@
               ]
             }
           },
+          "sensitive": {
+            "type": "boolean",
+            "description": "Whether changes to this flag require an explicit confirmation",
+            "example": false
+          },
           "changedBy": {
             "type": "string",
             "nullable": true,
             "description": "Identifier of the user who last changed this flag",
             "example": "admin@lumenpulse.com"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the flag was created",
+            "example": "2024-06-01T12:00:00.000Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "When the flag was last changed",
+            "example": "2024-06-01T12:00:00.000Z"
           }
         },
         "required": [
           "key",
-          "enabled"
+          "enabled",
+          "sensitive",
+          "createdAt",
+          "updatedAt"
         ]
       },
       "FlagAuditLogResponseDto": {
@@ -50283,9 +50389,19 @@
               ]
             }
           },
+          "sensitive": {
+            "type": "boolean",
+            "description": "Marks the flag as sensitive. Changes to a sensitive flag (including clearing this marker) are rejected with 428 unless `confirm` is true. Omit to leave the current marker unchanged.",
+            "example": false
+          },
+          "confirm": {
+            "type": "boolean",
+            "description": "Explicit confirmation for changing a flag marked sensitive. Ignored for non-sensitive flags.",
+            "example": true
+          },
           "changedBy": {
             "type": "string",
-            "description": "Identifier of the user who changed this flag",
+            "description": "Identifier of the user who changed this flag. Only used when the request has no authenticated user; otherwise the JWT identity is recorded so the audit trail cannot be spoofed.",
             "example": "admin@lumenpulse.com"
           }
         },
