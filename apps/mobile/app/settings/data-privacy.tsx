@@ -41,13 +41,13 @@ const CATEGORY_ICONS: Record<LocalDataCategoryId, string> = {
 };
 
 /**
- * Settings › Data & Privacy.
+ * Settings â€º Data & Privacy.
  *
  * Lists every category of locally stored data with its current size, clears
  * each one behind a confirmation, and hosts the analytics and crash-reporting
  * opt-out toggles.
  *
- * Clearing never signs the user out and never discards queued offline writes —
+ * Clearing never signs the user out and never discards queued offline writes â€”
  * see lib/local-data.ts for the protected-key rules that guarantee it. When
  * mutations are queued the screen says so explicitly before the user confirms.
  */
@@ -202,7 +202,7 @@ export default function DataPrivacyScreen() {
           {t('settings.data_privacy.description')}
         </Text>
 
-        {/* ── Stored data ──────────────────────────────────────────────── */}
+        {/* â”€â”€ Stored data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Text
           style={[styles.sectionTitle, { color: colors.text }]}
           accessible
@@ -252,7 +252,7 @@ export default function DataPrivacyScreen() {
                     <Text style={[styles.categorySize, { color: colors.accent }]} accessible>
                       {formatBytes(category.bytes)}
                       {category.entryCount > 0
-                        ? ` · ${t('settings.data_privacy.item_count', {
+                        ? ` Â· ${t('settings.data_privacy.item_count', {
                             count: category.entryCount,
                           })}`
                         : ''}
@@ -338,16 +338,16 @@ export default function DataPrivacyScreen() {
               accessibilityHint={t('settings.data_privacy.clear_all_hint')}
             >
               {busyCategory === 'all' ? (
-                <ActivityIndicator color="#ffffff" />
+                <ActivityIndicator color={colors.onStatus} />
               ) : (
                 <>
                   <Ionicons
                     name="trash-outline"
                     size={18}
-                    color="#ffffff"
+                    color={colors.onStatus}
                     style={{ marginRight: 8 }}
                   />
-                  <Text style={styles.clearAllButtonText} accessible>
+                  <Text style={[styles.clearAllButtonText, { color: colors.onStatus }]} accessible>
                     {t('settings.data_privacy.clear_all_title')}
                   </Text>
                 </>
@@ -360,7 +360,7 @@ export default function DataPrivacyScreen() {
           </>
         )}
 
-        {/* ── Privacy controls ─────────────────────────────────────────── */}
+        {/* â”€â”€ Privacy controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Text
           style={[styles.sectionTitle, { color: colors.text }]}
           accessible
@@ -392,7 +392,7 @@ export default function DataPrivacyScreen() {
                 value={preferences.analyticsEnabled}
                 onValueChange={handleAnalyticsToggle}
                 trackColor={{ false: colors.cardBorder, true: colors.accent }}
-                thumbColor="#ffffff"
+                thumbColor={colors.switchThumb}
                 accessibilityRole="switch"
                 accessibilityLabel={t('settings.data_privacy.analytics.title')}
               />
@@ -418,7 +418,7 @@ export default function DataPrivacyScreen() {
                 value={preferences.crashReportingEnabled}
                 onValueChange={handleCrashReportingToggle}
                 trackColor={{ false: colors.cardBorder, true: colors.accent }}
-                thumbColor="#ffffff"
+                thumbColor={colors.switchThumb}
                 accessibilityRole="switch"
                 accessibilityLabel={t('settings.data_privacy.crash_reporting.title')}
               />
@@ -430,7 +430,7 @@ export default function DataPrivacyScreen() {
           {t('settings.data_privacy.preferences_survive_clear')}
         </Text>
 
-        {/* ── Data Portability ─────────────────────────────────────────── */}
+        {/* â”€â”€ Data Portability â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
         <Text
           style={[styles.sectionTitle, { color: colors.text, marginTop: 24 }]}
           accessible
@@ -553,7 +553,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
   },
-  clearAllButtonText: { color: '#ffffff', fontSize: 16, fontWeight: '600' },
+  clearAllButtonText: { fontSize: 16, fontWeight: '600' },
   footnote: { fontSize: 12, lineHeight: 17, marginTop: 10 },
   preferenceCard: { borderRadius: 12, borderWidth: 1, padding: 14 },
   preferenceRow: {

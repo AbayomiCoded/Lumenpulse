@@ -33,7 +33,7 @@ const THEME_OPTIONS: { label: string; value: 'system' | 'light' | 'dark'; icon: 
 
 export default function SettingsScreen() {
   const { logout, isAuthenticated } = useAuth();
-  const { colors, setThemeMode, resolvedMode } = useLocalization();
+  const { colors, setThemeMode, themeMode } = useLocalization();
   const { t } = useLocalization();
   const { environment, environmentConfig, setEnvironment, isMainnetConfigured } = useEnvironment();
   const router = useRouter();
@@ -353,7 +353,7 @@ export default function SettingsScreen() {
                 value={biometricEnabled}
                 onValueChange={handleBiometricToggle}
                 trackColor={{ false: colors.cardBorder, true: colors.accent }}
-                thumbColor="#ffffff"
+                thumbColor={colors.switchThumb}
                 accessibilityLabel={t('settings.biometric_lock.enable')}
                 accessibilityRole="switch"
               />
@@ -401,10 +401,10 @@ export default function SettingsScreen() {
                   <Ionicons
                     name={option === 'testnet' ? 'flask-outline' : 'planet-outline'}
                     size={18}
-                    color={isActive ? '#ffffff' : colors.textSecondary}
+                    color={isActive ? colors.onAccent : colors.textSecondary}
                   />
                   <Text
-                    style={[styles.environmentLabel, { color: isActive ? '#ffffff' : colors.text }]}
+                    style={[styles.environmentLabel, { color: isActive ? colors.onAccent : colors.text }]}
                     accessible
                   >
                     {option === 'testnet'
@@ -455,7 +455,7 @@ export default function SettingsScreen() {
 
           <View style={styles.themeRow}>
             {THEME_OPTIONS.map((opt) => {
-              const isActive = resolvedMode === opt.value;
+              const isActive = themeMode === opt.value;
               return (
                 <TouchableOpacity
                   key={opt.value}
@@ -475,10 +475,10 @@ export default function SettingsScreen() {
                   <Ionicons
                     name={opt.icon as any}
                     size={20}
-                    color={isActive ? '#ffffff' : colors.textSecondary}
+                    color={isActive ? colors.onAccent : colors.textSecondary}
                   />
                   <Text
-                    style={[styles.themeLabel, { color: isActive ? '#ffffff' : colors.text }]}
+                    style={[styles.themeLabel, { color: isActive ? colors.onAccent : colors.text }]}
                     accessible
                   >
                     {opt.label}
@@ -611,8 +611,8 @@ export default function SettingsScreen() {
             accessibilityLabel={t('settings.logout')}
             accessibilityHint="Sign out of your account"
           >
-            <Ionicons name="log-out-outline" size={20} color="#ffffff" style={{ marginRight: 8 }} />
-            <Text style={styles.logoutButtonText} accessible>
+            <Ionicons name="log-out-outline" size={20} color={colors.onStatus} style={{ marginRight: 8 }} />
+            <Text style={[styles.logoutButtonText, { color: colors.onStatus }]} accessible>
               {t('settings.logout')}
             </Text>
           </TouchableOpacity>
@@ -774,7 +774,6 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   logoutButtonText: {
-    color: '#ffffff',
     fontSize: 18,
     fontWeight: '600',
   },
