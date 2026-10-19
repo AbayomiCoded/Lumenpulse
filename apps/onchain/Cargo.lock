@@ -331,6 +331,8 @@ dependencies = [
  "proptest",
  "reentrancy-guard",
  "soroban-sdk",
+ "test_utils",
+ "treasury",
  "version-interface",
 ]
 

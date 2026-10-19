@@ -280,6 +280,12 @@ export default function PortfolioScreen() {
       const cachedAccounts = await storage.getLinkedAccountsMetadata();
       if (cachedAccounts.length > 0) {
         setAccounts(cachedAccounts);
+        // Select the stored account before the network round-trip so the
+        // cached summary (kept warm by background refresh) renders at once.
+        const storedPublicKey = await storage.getActiveWalletPublicKey();
+        if (cachedAccounts.some((account) => account.publicKey === storedPublicKey)) {
+          setActivePublicKey(storedPublicKey);
+        }
       }
 
       const response = await usersApi.getLinkedAccounts();

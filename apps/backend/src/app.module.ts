@@ -49,6 +49,7 @@ import { GrantsModule } from './grants/grants.module';
 import { HealthModule } from './health/health.module';
 import { SchedulerModule } from './scheduler/scheduler.module';
 import { OutboxModule } from './outbox/outbox.module';
+import { OutboxIndexConsistencyModule } from './outbox-index-consistency/outbox-index-consistency.module';
 import { VerificationModule } from './verification/verification.module';
 import { TelegramBotModule } from './telegram-bot/telegram-bot.module';
 import { IdempotencyInterceptor } from './common/interceptors/idempotency.interceptor';
@@ -162,6 +163,7 @@ const isMainnet = config.stellar.network === 'mainnet';
     VerificationRequestsModule,
     WatchlistModule,
     OutboxModule,
+    OutboxIndexConsistencyModule,
     ExportModule,
     SignalsModule,
     AnalyticsModule,

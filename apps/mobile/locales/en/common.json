@@ -484,6 +484,10 @@
         "title": "Crash reporting",
         "description": "Automatically report crashes and errors. Wallet addresses are always removed before a report is sent."
       },
+      "background_refresh": {
+        "title": "Background refresh",
+        "description": "Update your watchlist and portfolio while the app is closed, so they are current when you open it. Skipped on low battery, Low Power Mode and metered connections."
+      },
       "categories": {
         "cached_content": {
           "title": "Cached content",
