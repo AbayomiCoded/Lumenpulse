@@ -9,6 +9,7 @@ import { syncBackgroundRefreshRegistration } from '../lib/background-refresh';
 import { OfflineIndicator } from '../lib/offline-indicator';
 import { mutationQueue, startMutationQueueReplayOnReconnect } from '../lib/mutation-queue';
 import { replaySavedSearchMutation } from '../lib/saved-searches';
+import { startModerationDecisionSync } from '../lib/moderation-decisions';
 import { AuthProvider } from '../contexts/AuthContext';
 import { DeepLinkProvider } from '../contexts/DeepLinkContext';
 import { EnvironmentProvider } from '../contexts/EnvironmentContext';
@@ -42,6 +43,10 @@ export default function RootLayout() {
       mutationQueue.setReplayer(null);
     };
   }, []);
+
+  // Moderation decisions replay through their own narrow handler so the shared
+  // queue executor never has to understand report updates.
+  useEffect(() => startModerationDecisionSync(), []);
 
   return (
     // LocalizationProvider owns theme state too; contexts/ThemeContext's

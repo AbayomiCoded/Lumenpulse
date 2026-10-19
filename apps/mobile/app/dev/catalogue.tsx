@@ -10,6 +10,7 @@ import ListSkeleton from '../../components/ListSkeleton';
 import NetworkBadge from '../../components/NetworkBadge';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import ReportContentModal from '../../components/ReportContentModal';
+import ReviewerGate from '../../components/ReviewerGate';
 import StandardList from '../../components/StandardList';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -111,6 +112,7 @@ function EntryPreview({ entry }: { entry: CatalogueEntry }) {
   const { isAuthenticated } = useAuth();
   const [modalOpen, setModalOpen] = useState(false);
   const [guardMounted, setGuardMounted] = useState(false);
+  const [reviewerMounted, setReviewerMounted] = useState(false);
 
   switch (entry.name) {
     case 'StandardList':
@@ -208,6 +210,20 @@ function EntryPreview({ entry }: { entry: CatalogueEntry }) {
             // Mounted on demand: with the lock enabled in Settings the guard
             // asks for biometrics as soon as it mounts.
             <ToggleButton label="Mount BiometricLockGuard" onPress={() => setGuardMounted(true)} />
+          )}
+        </VariantFrame>
+      );
+    case 'ReviewerGate':
+      return (
+        <VariantFrame label="populated (reviewer, children shown)">
+          {reviewerMounted ? (
+            <ReviewerGate>
+              <GuardChild text="Reviewer-only content." />
+            </ReviewerGate>
+          ) : (
+            // Mounted on demand: a non-reviewer account is redirected home by
+            // the guard (ReviewerGate.tsx), so it is opt-in.
+            <ToggleButton label="Mount ReviewerGate" onPress={() => setReviewerMounted(true)} />
           )}
         </VariantFrame>
       );

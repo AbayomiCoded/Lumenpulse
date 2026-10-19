@@ -24,6 +24,7 @@ import {
   isBiometricLockSupported,
   setBiometricLockEnabled,
 } from '../../lib/biometric-lock';
+import { useReviewerAccess } from '../../lib/use-reviewer-access';
 
 const THEME_OPTIONS: { label: string; value: 'system' | 'light' | 'dark'; icon: string }[] = [
   { label: 'System', value: 'system', icon: 'phone-portrait-outline' },
@@ -37,6 +38,7 @@ export default function SettingsScreen() {
   const { t } = useLocalization();
   const { environment, environmentConfig, setEnvironment, isMainnetConfigured } = useEnvironment();
   const router = useRouter();
+  const { isReviewer } = useReviewerAccess();
   const [biometricEnabled, setBiometricEnabled] = useState(false);
   const [biometricLoading, setBiometricLoading] = useState(true);
   const [biometricSaving, setBiometricSaving] = useState(false);
@@ -297,6 +299,40 @@ export default function SettingsScreen() {
           </TouchableOpacity>
 
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+          {isReviewer ? (
+            <>
+              <TouchableOpacity
+                testID="settings-moderation-nav"
+                style={styles.navRow}
+                activeOpacity={0.75}
+                onPress={() => router.push('/moderation')}
+                accessibilityRole="link"
+                accessibilityLabel={t('moderation.settings_title')}
+                accessibilityHint={t('moderation.settings_description')}
+              >
+                <View style={styles.navRowCopy}>
+                  <View style={[styles.navIconShell, { backgroundColor: colors.card }]}>
+                    <Ionicons name="shield-checkmark-outline" size={18} color={colors.accent} />
+                  </View>
+                  <View style={styles.navTextWrap}>
+                    <Text style={[styles.navTitle, { color: colors.text }]} accessible>
+                      {t('moderation.settings_title')}
+                    </Text>
+                    <Text
+                      style={[styles.navDescription, { color: colors.textSecondary }]}
+                      accessible
+                    >
+                      {t('moderation.settings_description')}
+                    </Text>
+                  </View>
+                </View>
+                <Ionicons name="chevron-forward" size={18} color={colors.textSecondary} />
+              </TouchableOpacity>
+
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            </>
+          ) : null}
 
           <TouchableOpacity
             testID="settings-data-exports-nav"
