@@ -7,9 +7,14 @@ import { MigrationInterface, QueryRunner } from 'typeorm';
  * explicit confirmation, which the admin console collects through a
  * type-the-key dialog. The column is NOT NULL with a false default so every
  * existing flag reads as non-sensitive without a data backfill.
+ *
+ * On PostgreSQL 11+ adding a column with a constant DEFAULT is a catalog-only
+ * change (no table rewrite), so the NOT NULL + DEFAULT warning from
+ * `migration:check` does not apply. Splitting this into a nullable add plus
+ * `SET NOT NULL` would be worse: that step scans the whole table under lock.
  */
-export class AddFeatureFlagSensitivity1862000000000 implements MigrationInterface {
-  name = 'AddFeatureFlagSensitivity1862000000000';
+export class AddFeatureFlagSensitivity1866000000000 implements MigrationInterface {
+  name = 'AddFeatureFlagSensitivity1866000000000';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`
