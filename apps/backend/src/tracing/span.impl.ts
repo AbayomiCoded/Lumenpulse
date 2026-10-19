@@ -1,4 +1,10 @@
-import { Span, SpanEvent, SpanKind, SpanRecord, SpanStatus } from './tracing.types';
+import {
+  Span,
+  SpanEvent,
+  SpanKind,
+  SpanRecord,
+  SpanStatus,
+} from './tracing.types';
 
 export class SpanImpl implements Span {
   readonly traceId: string;

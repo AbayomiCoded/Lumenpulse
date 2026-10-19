@@ -19,7 +19,11 @@ export class TypeOrmQueryTracer implements TypeOrmLogger {
     span.end();
   }
 
-  logQueryError(error: string | Error, query: string, parameters?: unknown[]): void {
+  logQueryError(
+    error: string | Error,
+    query: string,
+    parameters?: unknown[],
+  ): void {
     const span = this.tracer.startSpan('db.query', {
       kind: 'CLIENT',
       attributes: {

@@ -21,7 +21,9 @@ export interface ParsedTraceparent {
  * Parses a standard W3C `traceparent` header.
  * Expected format: `00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01`
  */
-export function parseTraceparent(header?: string | string[]): ParsedTraceparent | null {
+export function parseTraceparent(
+  header?: string | string[],
+): ParsedTraceparent | null {
   if (!header) return null;
   const value = Array.isArray(header) ? header[0] : header;
   if (typeof value !== 'string') return null;

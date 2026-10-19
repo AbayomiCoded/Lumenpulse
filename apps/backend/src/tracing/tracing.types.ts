@@ -1,4 +1,5 @@
-export type SpanKind = 'SERVER' | 'CLIENT' | 'PRODUCER' | 'CONSUMER' | 'INTERNAL';
+export type SpanKind =
+  'SERVER' | 'CLIENT' | 'PRODUCER' | 'CONSUMER' | 'INTERNAL';
 export type SpanStatus = 'OK' | 'ERROR' | 'UNSET';
 
 export interface SpanEvent {

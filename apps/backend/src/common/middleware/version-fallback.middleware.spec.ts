@@ -1,4 +1,7 @@
-import { VersionFallbackMiddleware, API_TRANSITION_SUNSET_DATE } from './version-fallback.middleware';
+import {
+  VersionFallbackMiddleware,
+  API_TRANSITION_SUNSET_DATE,
+} from './version-fallback.middleware';
 import { Request, Response, NextFunction } from 'express';
 
 describe('VersionFallbackMiddleware', () => {
@@ -119,8 +122,14 @@ describe('VersionFallbackMiddleware', () => {
 
     expect(mockRequest.url).toBe('/v1/projects');
     expect(mockResponse.setHeader).toHaveBeenCalledWith('Deprecation', 'true');
-    expect(mockResponse.setHeader).toHaveBeenCalledWith('Sunset', API_TRANSITION_SUNSET_DATE);
-    expect(mockResponse.setHeader).toHaveBeenCalledWith('Link', '</v1/projects>; rel="successor-version"');
+    expect(mockResponse.setHeader).toHaveBeenCalledWith(
+      'Sunset',
+      API_TRANSITION_SUNSET_DATE,
+    );
+    expect(mockResponse.setHeader).toHaveBeenCalledWith(
+      'Link',
+      '</v1/projects>; rel="successor-version"',
+    );
     expect(nextFunction).toHaveBeenCalled();
   });
 
@@ -138,7 +147,10 @@ describe('VersionFallbackMiddleware', () => {
 
     expect(mockRequest.url).toBe('/v1/news?limit=10&page=2');
     expect(mockResponse.setHeader).toHaveBeenCalledWith('Deprecation', 'true');
-    expect(mockResponse.setHeader).toHaveBeenCalledWith('Link', '</v1/news>; rel="successor-version"');
+    expect(mockResponse.setHeader).toHaveBeenCalledWith(
+      'Link',
+      '</v1/news>; rel="successor-version"',
+    );
     expect(nextFunction).toHaveBeenCalled();
   });
 });

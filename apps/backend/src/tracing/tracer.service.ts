@@ -40,7 +40,10 @@ export class TracerService {
       }
     }
 
-    if (process.env.TRACING_ENABLED === 'false' || process.env.TRACING_ENABLED === '0') {
+    if (
+      process.env.TRACING_ENABLED === 'false' ||
+      process.env.TRACING_ENABLED === '0'
+    ) {
       this.isEnabled = false;
     }
   }
@@ -95,9 +98,7 @@ export class TracerService {
     const parentSpanId = parsed ? parsed.parentSpanId : undefined;
     const sampled = parsed ? parsed.sampled : this.shouldSample();
     const corrId =
-      correlationId ||
-      RequestContextService.getCorrelationId() ||
-      undefined;
+      correlationId || RequestContextService.getCorrelationId() || undefined;
 
     return {
       traceId,
@@ -157,7 +158,9 @@ export class TracerService {
       traceId: span.traceId,
       spanId: span.spanId,
       sampled: span.sampled,
-      correlationId: (span.toRecord().attributes['lumenpulse.correlation_id'] as string) || undefined,
+      correlationId:
+        (span.toRecord().attributes['lumenpulse.correlation_id'] as string) ||
+        undefined,
       activeSpan: span,
     };
 

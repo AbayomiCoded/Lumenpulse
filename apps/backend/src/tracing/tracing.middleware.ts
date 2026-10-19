@@ -1,10 +1,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { TracerService } from './tracer.service';
-import {
-  W3C_TRACEPARENT_HEADER,
-  formatTraceparent,
-} from './w3c-trace-context';
+import { W3C_TRACEPARENT_HEADER, formatTraceparent } from './w3c-trace-context';
 import { RequestContextService } from '../common/services/request-context.service';
 
 @Injectable()
@@ -12,7 +9,8 @@ export class TracingMiddleware implements NestMiddleware {
   constructor(private readonly tracer: TracerService) {}
 
   use(req: Request, res: Response, next: NextFunction): void {
-    const rawTraceparent = req.headers[W3C_TRACEPARENT_HEADER] as string | undefined;
+    const rawTraceparent = req.headers[W3C_TRACEPARENT_HEADER] as
+      string | undefined;
     const correlationId =
       (req.headers['x-correlation-id'] as string) ||
       (req.headers['x-request-id'] as string) ||
