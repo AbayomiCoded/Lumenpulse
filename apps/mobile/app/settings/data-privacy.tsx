@@ -29,6 +29,10 @@ import {
   setAnalyticsEnabled,
   setCrashReportingEnabled,
 } from '../../lib/privacy-preferences';
+import {
+  isBackgroundRefreshEnabled,
+  setBackgroundRefreshEnabled,
+} from '../../lib/background-refresh';
 
 const CATEGORY_ICONS: Record<LocalDataCategoryId, string> = {
   cached_content: 'cloud-download-outline',
@@ -60,7 +64,10 @@ export default function DataPrivacyScreen() {
   const [preferences, setPreferences] = useState<PrivacyPreferences>(DEFAULT_PRIVACY_PREFERENCES);
   const [loading, setLoading] = useState(true);
   const [busyCategory, setBusyCategory] = useState<LocalDataCategoryId | 'all' | null>(null);
-  const [savingPreference, setSavingPreference] = useState<'analytics' | 'crash' | null>(null);
+  const [savingPreference, setSavingPreference] = useState<
+    'analytics' | 'crash' | 'background' | null
+  >(null);
+  const [backgroundRefresh, setBackgroundRefresh] = useState(true);
 
   const loadInventory = useCallback(async () => {
     const next = await getLocalDataInventory();
@@ -70,8 +77,13 @@ export default function DataPrivacyScreen() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [, storedPreferences] = await Promise.all([loadInventory(), getPrivacyPreferences()]);
+        const [, storedPreferences, backgroundEnabled] = await Promise.all([
+          loadInventory(),
+          getPrivacyPreferences(),
+          isBackgroundRefreshEnabled(),
+        ]);
         setPreferences(storedPreferences);
+        setBackgroundRefresh(backgroundEnabled);
       } finally {
         setLoading(false);
       }
@@ -170,6 +182,19 @@ export default function DataPrivacyScreen() {
     setSavingPreference('crash');
     try {
       setPreferences(await setCrashReportingEnabled(nextValue));
+    } catch {
+      Alert.alert(t('errors.error'), t('settings.data_privacy.preference_save_failed'));
+    } finally {
+      setSavingPreference(null);
+    }
+  };
+
+  const handleBackgroundRefreshToggle = async (nextValue: boolean) => {
+    if (savingPreference) return;
+    setSavingPreference('background');
+    try {
+      await setBackgroundRefreshEnabled(nextValue);
+      setBackgroundRefresh(nextValue);
     } catch {
       Alert.alert(t('errors.error'), t('settings.data_privacy.preference_save_failed'));
     } finally {
@@ -421,6 +446,32 @@ export default function DataPrivacyScreen() {
                 thumbColor={colors.switchThumb}
                 accessibilityRole="switch"
                 accessibilityLabel={t('settings.data_privacy.crash_reporting.title')}
+              />
+            )}
+          </View>
+
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+
+          <View style={styles.preferenceRow}>
+            <View style={styles.preferenceCopy}>
+              <Text style={[styles.categoryTitle, { color: colors.text }]} accessible>
+                {t('settings.data_privacy.background_refresh.title')}
+              </Text>
+              <Text style={[styles.categoryMeta, { color: colors.textSecondary }]} accessible>
+                {t('settings.data_privacy.background_refresh.description')}
+              </Text>
+            </View>
+
+            {savingPreference === 'background' ? (
+              <ActivityIndicator color={colors.accent} />
+            ) : (
+              <Switch
+                value={backgroundRefresh}
+                onValueChange={handleBackgroundRefreshToggle}
+                trackColor={{ false: colors.cardBorder, true: colors.accent }}
+                thumbColor={colors.switchThumb}
+                accessibilityRole="switch"
+                accessibilityLabel={t('settings.data_privacy.background_refresh.title')}
               />
             )}
           </View>

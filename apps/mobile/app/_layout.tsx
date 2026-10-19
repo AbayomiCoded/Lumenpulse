@@ -5,6 +5,7 @@ import { View } from 'react-native';
 import { DataPreloader } from '../components/DataPreloader';
 import { StartupInteractiveGate } from '../components/StartupInteractiveGate';
 import { applyPrivacyPreferences } from '../lib/privacy-preferences';
+import { syncBackgroundRefreshRegistration } from '../lib/background-refresh';
 import { OfflineIndicator } from '../lib/offline-indicator';
 import { mutationQueue, startMutationQueueReplayOnReconnect } from '../lib/mutation-queue';
 import { replaySavedSearchMutation } from '../lib/saved-searches';
@@ -22,6 +23,12 @@ export default function RootLayout() {
   // a choice made in Settings › Data & Privacy holds across sessions.
   useEffect(() => {
     void applyPrivacyPreferences();
+  }, []);
+
+  // Keep the OS background-refresh task in step with the user's choice in
+  // Settings › Data & Privacy (and with OS-level restrictions).
+  useEffect(() => {
+    void syncBackgroundRefreshRegistration();
   }, []);
 
   // Replay queued offline mutations whenever connectivity returns. The queue
