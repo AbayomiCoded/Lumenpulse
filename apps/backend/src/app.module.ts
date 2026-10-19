@@ -9,7 +9,6 @@ import { memoryStorage } from 'multer';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { TestExceptionController } from './test-exception.controller';
 
 import { SentimentModule } from './sentiment/sentiment.module';
 import { MetricsModule } from './metrics/metrics.module';
@@ -42,7 +41,6 @@ import {
   createThrottlerOptions,
   getRateLimitSettings,
 } from './common/rate-limit/rate-limit.config';
-import { TestController } from './test/test.controller';
 import { UploadModule } from './upload/upload.module';
 import { AuthModule } from './auth/auth.module';
 import { SupportModeModule } from './support-mode/support-mode.module';
@@ -243,10 +241,7 @@ const isMainnet = config.stellar.network === 'mainnet';
     SavedSearchesModule,
     ServiceApiKeysModule,
   ],
-  controllers: [
-    AppController,
-    ...(!isMainnet ? [TestController, TestExceptionController] : []),
-  ],
+  controllers: [AppController],
   providers: [
     AppService,
     StructuredLoggerService,
