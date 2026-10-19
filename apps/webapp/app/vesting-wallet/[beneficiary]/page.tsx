@@ -164,9 +164,6 @@ export default function VestingWalletPage() {
   const timeRemaining = schedule ? getTimeRemaining(schedule.startTime, schedule.duration) : 0;
   const endTime = schedule ? schedule.startTime + schedule.duration : 0;
   const endDate = schedule ? formatDate(endTime) : "";
-  const previewAmount = preview?.claimableAmount || schedule.claimableAmount;
-  const previewUnlocked = preview?.unlockedAmount || schedule.claimableAmount;
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background text-foreground">
