@@ -169,6 +169,9 @@ jobs:
           build-args: |
             APP_VERSION=${{ needs.prepare.outputs.version }}
             GIT_SHA=${{ github.sha }}
+          labels: |
+            org.opencontainers.image.version=${{ needs.prepare.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
 
