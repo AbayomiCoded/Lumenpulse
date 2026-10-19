@@ -71,6 +71,10 @@ import { z } from 'zod';
  * - PORTFOLIO_SNAPSHOT_RETRY_DELAY_MS
  * - PORTFOLIO_SNAPSHOT_QUEUE_METRICS
  * - OUTBOX_MAX_ATTEMPTS
+ * - OUTBOX_INDEX_CHECK_WINDOW_MINUTES
+ * - OUTBOX_INDEX_CHECK_SETTLE_MINUTES
+ * - OUTBOX_INDEX_CHECK_MAX_ROWS
+ * - OUTBOX_INDEX_CHECK_REQUIRED_TYPES
  * - RATE_LIMIT_TRACK_BY_IP
  * - RATE_LIMIT_TRACK_BY_API_KEY
  * - RATE_LIMIT_API_KEY_HEADER
@@ -593,6 +597,26 @@ const envSchema = z
 
     // Outbox relay — dispatch attempts before an event is dead-lettered.
     OUTBOX_MAX_ATTEMPTS: z.coerce.number().int().min(1).default(5),
+
+    // Outbox ↔ soroban event index consistency check
+    // (see apps/backend/src/outbox-index-consistency).
+    OUTBOX_INDEX_CHECK_WINDOW_MINUTES: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .default(120),
+    OUTBOX_INDEX_CHECK_SETTLE_MINUTES: z.coerce
+      .number()
+      .int()
+      .min(0)
+      .default(15),
+    OUTBOX_INDEX_CHECK_MAX_ROWS: z.coerce
+      .number()
+      .int()
+      .min(1)
+      .max(50_000)
+      .default(5_000),
+    OUTBOX_INDEX_CHECK_REQUIRED_TYPES: z.string().trim().optional(),
 
     // Idempotency keys (see apps/backend/src/idempotency)
     IDEMPOTENCY_RETENTION_MS: z.coerce
@@ -1215,6 +1239,22 @@ const optionalSummary = [
     String(parsedEnv.PORTFOLIO_SNAPSHOT_QUEUE_METRICS),
   ],
   ['OUTBOX_MAX_ATTEMPTS', String(parsedEnv.OUTBOX_MAX_ATTEMPTS)],
+  [
+    'OUTBOX_INDEX_CHECK_WINDOW_MINUTES',
+    String(parsedEnv.OUTBOX_INDEX_CHECK_WINDOW_MINUTES),
+  ],
+  [
+    'OUTBOX_INDEX_CHECK_SETTLE_MINUTES',
+    String(parsedEnv.OUTBOX_INDEX_CHECK_SETTLE_MINUTES),
+  ],
+  [
+    'OUTBOX_INDEX_CHECK_MAX_ROWS',
+    String(parsedEnv.OUTBOX_INDEX_CHECK_MAX_ROWS),
+  ],
+  [
+    'OUTBOX_INDEX_CHECK_REQUIRED_TYPES',
+    parsedEnv.OUTBOX_INDEX_CHECK_REQUIRED_TYPES || '(none)',
+  ],
   ['IDEMPOTENCY_RETENTION_MS', String(parsedEnv.IDEMPOTENCY_RETENTION_MS)],
   ['IDEMPOTENCY_LEASE_MS', String(parsedEnv.IDEMPOTENCY_LEASE_MS)],
   [
@@ -1406,6 +1446,21 @@ export const config = Object.freeze({
      * queue and stops blocking the relay. Default 5.
      */
     maxAttempts: parsedEnv.OUTBOX_MAX_ATTEMPTS,
+  }),
+  outboxIndexCheck: Object.freeze({
+    /** Length of the createdAt / processedAt window compared per run. */
+    windowMinutes: parsedEnv.OUTBOX_INDEX_CHECK_WINDOW_MINUTES,
+    /** Recent records are left alone so in-flight work is not flagged. */
+    settleMinutes: parsedEnv.OUTBOX_INDEX_CHECK_SETTLE_MINUTES,
+    /** Per-query row cap that bounds the cost of one run. */
+    maxRows: parsedEnv.OUTBOX_INDEX_CHECK_MAX_ROWS,
+    /**
+     * Soroban canonical event types that must always have an outbox event.
+     * Empty disables the indexed-but-never-published direction.
+     */
+    requiredTypes: Object.freeze(
+      splitCsv(parsedEnv.OUTBOX_INDEX_CHECK_REQUIRED_TYPES),
+    ),
   }),
   idempotency: Object.freeze({
     /**
