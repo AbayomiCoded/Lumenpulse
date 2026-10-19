@@ -38,13 +38,13 @@ jobs:
         working-directory: ./apps/data-processing
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Python
         uses: ./.github/actions/setup-python-app

@@ -54,5 +54,8 @@ jobs:
       - name: Every action is pinned to a commit SHA
         run: node scripts/check-action-pins.mjs
 
+      - name: Local actions are used after checkout
+        run: node scripts/check-local-action-order.mjs
+
       - name: Path filters match .github/ci-paths.json
         run: node --test scripts/test-ci-coverage.mjs

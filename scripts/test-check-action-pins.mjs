@@ -41,3 +41,19 @@ test('every workflow and action in this repository is pinned', () => {
     assert.deepEqual(findUnpinned(fs.readFileSync(f, 'utf8')), [], f);
   }
 });
+
+import { findMisordered } from './check-local-action-order.mjs';
+
+test('local action order: flags a local action used before checkout', () => {
+  const bad = `jobs:\n  build:\n    steps:\n      - uses: ./.github/actions/x\n      - uses: actions/checkout@${SHA} # v4\n`;
+  assert.equal(findMisordered(bad).length, 1);
+  const good = `jobs:\n  build:\n    steps:\n      - uses: actions/checkout@${SHA} # v4\n      - uses: ./.github/actions/x\n`;
+  assert.deepEqual(findMisordered(good), []);
+});
+
+test('local action order: every workflow in this repository is correct', () => {
+  for (const name of fs.readdirSync('.github/workflows')) {
+    const source = fs.readFileSync(`.github/workflows/${name}`, 'utf8');
+    assert.deepEqual(findMisordered(source), [], name);
+  }
+});

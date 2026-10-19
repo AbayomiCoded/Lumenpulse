@@ -31,13 +31,13 @@ jobs:
       run:
         working-directory: ./apps/mobile
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node and install dependencies
         uses: ./.github/actions/setup-node-app
@@ -77,22 +77,8 @@ jobs:
     # Issue #1714. Four `echo` lines; 5 min is a ceiling, not an estimate.
     timeout-minutes: 5
     steps:
-      - name: Start timeout guard
-        uses: ./.github/actions/job-timeout-guard
-        with:
-          phase: start
-
       - name: Summarize flake rate
         run: |
           echo "### Mobile E2E flake check" >> "$GITHUB_STEP_SUMMARY"
           echo "10 consecutive runs of the smoke suite completed. See the" >> "$GITHUB_STEP_SUMMARY"
           echo "'repeat-suite' job matrix above for the pass/fail result of each run." >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Report timeout guard
-        if: always()
-        uses: ./.github/actions/job-timeout-guard
-        with:
-          phase: finish
-          job-id: report
-          budget-minutes: '5'
-          note: Four `echo` lines into the job summary; runs after the 10 matrix legs finish.

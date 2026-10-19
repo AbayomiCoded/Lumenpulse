@@ -40,13 +40,13 @@ jobs:
         working-directory: ./apps/mobile
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node and install dependencies
         uses: ./.github/actions/setup-node-app
@@ -82,13 +82,13 @@ jobs:
         working-directory: ./apps/mobile
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node and install dependencies
         uses: ./.github/actions/setup-node-app
@@ -192,13 +192,13 @@ jobs:
         working-directory: ./apps/mobile
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node and install dependencies
         uses: ./.github/actions/setup-node-app
@@ -272,13 +272,13 @@ jobs:
         working-directory: ./apps/mobile
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
       - name: Start timeout guard
         uses: ./.github/actions/job-timeout-guard
         with:
           phase: start
-
-      - name: Checkout repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Set up Node and install dependencies
         uses: ./.github/actions/setup-node-app
