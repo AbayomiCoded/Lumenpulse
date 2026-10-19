@@ -69,12 +69,12 @@ counted, they are additions):
 
 | Workflow | Before | After |
 |---|---|---|
-| `backend.yml` | 286 | @BACKEND@ |
-| `mobile.yml` | 360 | @MOBILE@ |
-| `data-processing.yml` | 82 | @DATA@ |
-| `onchain.yml` | 136 | @ONCHAIN@ |
-| `mobile-e2e-flake-check.yml` | 103 | @FLAKE@ |
-| **Total** | **967** | **@TOTAL@** |
+| `backend.yml` | 286 | 275 |
+| `mobile.yml` | 360 | 337 |
+| `data-processing.yml` | 82 | 85 |
+| `onchain.yml` | 136 | 138 |
+| `mobile-e2e-flake-check.yml` | 103 | 84 |
+| **Total** | **967** | **919** |
 
 The setup logic that used to be repeated now exists once, in about 75 lines across the two
 actions. The path filters added by [#1723](ci-path-filters.md) are included in the "after"
