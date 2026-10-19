@@ -49,15 +49,16 @@ export class TypeOrmQueryTracer implements TypeOrmLogger {
     span.end();
   }
 
-  logSchemaBuild(_message: string): void {
-    // schema build log
+  logSchemaBuild(message: string): void {
+    void message;
   }
 
-  logMigration(_message: string): void {
-    // migration log
+  logMigration(message: string): void {
+    void message;
   }
 
-  log(_level: 'log' | 'info' | 'warn', _message: unknown): void {
-    // general log
+  log(level: 'log' | 'info' | 'warn', message: unknown): void {
+    void level;
+    void message;
   }
 }
